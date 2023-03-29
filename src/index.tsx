@@ -8,7 +8,7 @@ import {
   ExperimentConfigurationRequestor,
   IEppoClient,
   EppoClient,
-  HttpClient
+  HttpClient,
 } from '@eppo/js-client-sdk-common';
 
 import { EppoAsyncStorage } from './async-storage';
@@ -36,13 +36,13 @@ export interface IClientConfig {
   assignmentLogger: IAssignmentLogger;
 }
 
-export { IAssignmentLogger, IAssignmentEvent }
+export { IAssignmentLogger, IAssignmentEvent };
 
 const asyncStorage = new EppoAsyncStorage();
 
 class EppoReactNativeClient extends EppoClient {
   public static instance: EppoReactNativeClient = new EppoReactNativeClient(
-    asyncStorage,
+    asyncStorage
   );
 }
 
@@ -66,8 +66,13 @@ export async function init(config: IClientConfig): Promise<IEppoClient> {
     sdkVersion,
   });
 
+  await asyncStorage.init();
+
   EppoReactNativeClient.instance.setLogger(config.assignmentLogger);
-  const configurationRequestor = new ExperimentConfigurationRequestor(asyncStorage, httpClient);
+  const configurationRequestor = new ExperimentConfigurationRequestor(
+    asyncStorage,
+    httpClient
+  );
   await configurationRequestor.fetchAndStoreConfigurations();
 
   return EppoReactNativeClient.instance;

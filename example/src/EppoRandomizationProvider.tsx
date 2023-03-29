@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import { useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
@@ -17,16 +19,16 @@ export default function EppoRandomizationProvider({
   const [isInitialized, setIsInitialized] = useState(false);
   useEffect(() => {
     init({
-      baseUrl: 'https://qa.eppo.cloud/api',
-      apiKey: 'mWJi3koIVP5jiGs0i9I4CISmLXpAYawwc1kp-1RaHJg',
-      assignmentLogger : {
+      baseUrl: 'https://eppo.cloud/api',
+      apiKey: '<API_KEY>',
+      assignmentLogger: {
         logAssignment(assignment) {
           console.log('ASSIGNMENT', assignment);
         },
       },
     }).then(() => {
       return setIsInitialized(true);
-    })
+    });
   }, []);
 
   if (!waitForInitialization || isInitialized) {
