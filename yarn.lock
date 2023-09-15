@@ -1260,10 +1260,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@eppo/js-client-sdk-common@1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@eppo/js-client-sdk-common/-/js-client-sdk-common-1.4.0.tgz#2091cff078667e67516f565f91ee0eb04df22e7e"
-  integrity sha512-WL1ZuA62p4K6t7E5eLTPGMDDOFgKjkdXQPyamglUbJ4HHZ8ztQVeumIPu9r92o1dgLQubyMP2vcIuYC50HjkGQ==
+"@eppo/js-client-sdk-common@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@eppo/js-client-sdk-common/-/js-client-sdk-common-1.4.1.tgz#b75bb34c9004ea34070be38250532e04d2683e83"
+  integrity sha512-1dPursZSgtJb7ufLbePI1qIryydFTP6Y+EJYiV+I1njhBEdIUjc/E1+Qe3kBDSXoyowrk8VjUZGV4RD4YnPhcA==
   dependencies:
     axios "^0.27.2"
     md5 "^2.3.0"
