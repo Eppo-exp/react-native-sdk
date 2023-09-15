@@ -14,8 +14,7 @@ describe('EppoReactNativeClient E2E test', () => {
       apiKey: 'dummy',
       baseUrl: 'http://127.0.0.1:4000',
       assignmentLogger: {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        logAssignment(assignment): Promise<void> {
+        logAssignment(_assignment): Promise<void> {
           return Promise.resolve();
         },
       },
