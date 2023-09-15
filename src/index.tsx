@@ -36,7 +36,7 @@ export interface IClientConfig {
   assignmentLogger: IAssignmentLogger;
 }
 
-export { IAssignmentLogger, IAssignmentEvent };
+export { IAssignmentLogger, IAssignmentEvent, IEppoClient };
 
 const asyncStorage = new EppoAsyncStorage();
 
@@ -54,7 +54,6 @@ class EppoReactNativeClient extends EppoClient {
  */
 export async function init(config: IClientConfig): Promise<IEppoClient> {
   validation.validateNotBlank(config.apiKey, 'API key required');
-
   const axiosInstance = axios.create({
     baseURL: config.baseUrl || constants.BASE_URL,
     timeout: constants.REQUEST_TIMEOUT_MILLIS,
