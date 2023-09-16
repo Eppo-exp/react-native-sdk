@@ -17,11 +17,11 @@ export class EppoAsyncStorage<T> implements IConfigurationStore<T> {
     }
   }
 
-  public get<T>(key: string): T {
+  public get(key: string): T {
     return this.cache[key];
   }
 
-  public setEntries<T>(entries: Record<string, T>): void {
+  public setEntries(entries: Record<string, T>): void {
     for (var key in entries) {
       this.cache[key] = entries[key];
     }
