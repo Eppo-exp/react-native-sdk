@@ -40,7 +40,7 @@ export { IAssignmentLogger, IAssignmentEvent, IEppoClient };
 
 const asyncStorage = new EppoAsyncStorage();
 
-class EppoReactNativeClient extends EppoClient {
+export class EppoReactNativeClient extends EppoClient {
   public static instance: EppoReactNativeClient = new EppoReactNativeClient(
     asyncStorage
   );

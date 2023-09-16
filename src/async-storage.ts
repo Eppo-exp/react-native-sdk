@@ -1,10 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import type { IConfigurationStore } from '@eppo/js-client-sdk-common';
-
 const STORAGE_KEY = '@eppo/sdk-cache';
 
-export class EppoAsyncStorage implements IConfigurationStore {
+export interface IConfigurationStore<T> {
+  get(key: string): T;
+  setEntries(entries: Record<string, T>): void;
+}
+
+export class EppoAsyncStorage<T> implements IConfigurationStore<T> {
   private cache: { [key: string]: any } = {};
 
   public async init() {

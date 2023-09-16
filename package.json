@@ -30,6 +30,7 @@
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "prepare": "make prepare",
     "prepack": "bob build",
     "release": "release-it",
     "example": "yarn --cwd example",
@@ -78,6 +79,7 @@
     "react-native": "0.71.3",
     "react-native-builder-bob": "^0.20.0",
     "release-it": "^15.0.0",
+    "testdouble": "^3.16.4",
     "typescript": "^4.5.2"
   },
   "resolutions": {
