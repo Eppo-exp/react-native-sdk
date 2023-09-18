@@ -12,7 +12,6 @@ import {
   IEppoClient,
   init,
 } from '../../src/index';
-import type { IExperimentConfiguration } from '@eppo/js-client-sdk-common/dist/dto/experiment-configuration-dto';
 import type { EppoAsyncStorage } from 'src/async-storage';
 
 describe('EppoReactNativeClient E2E test', () => {
@@ -92,6 +91,52 @@ describe('EppoReactNativeClient E2E test', () => {
     });
   });
 
+  it('assigns subject from overrides when experiment is enabled', () => {
+    const mockConfigStore = td.object<EppoAsyncStorage>();
+    const mockLogger = td.object<IAssignmentLogger>();
+    td.when(mockConfigStore.get(flagKey)).thenReturn({
+      ...mockExperimentConfig,
+      overrides: {
+        '1b50f33aef8f681a13f623963da967ed': 'variant-2',
+      },
+      typedOverrides: {
+        '1b50f33aef8f681a13f623963da967ed': 'variant-2',
+      },
+    });
+    const client_instance = new EppoReactNativeClient(mockConfigStore);
+    client_instance.setLogger(mockLogger);
+    const assignment = client_instance.getAssignment('subject-10', flagKey);
+    expect(assignment).toEqual('variant-2');
+  });
+
+  it('assigns subject from overrides when experiment is not enabled', () => {
+    const mockConfigStore = td.object<EppoAsyncStorage>();
+    const mockLogger = td.object<IAssignmentLogger>();
+    td.when(mockConfigStore.get(flagKey)).thenReturn({
+      ...mockExperimentConfig,
+      overrides: {
+        '1b50f33aef8f681a13f623963da967ed': 'variant-2',
+      },
+      typedOverrides: {
+        '1b50f33aef8f681a13f623963da967ed': 'variant-2',
+      },
+    });
+    const client_instance = new EppoReactNativeClient(mockConfigStore);
+    client_instance.setLogger(mockLogger);
+    const assignment = client_instance.getAssignment('subject-10', flagKey);
+    expect(assignment).toEqual('variant-2');
+  });
+
+  it('returns null when experiment config is absent', () => {
+    const mockConfigStore = td.object<EppoAsyncStorage>();
+    const mockLogger = td.object<IAssignmentLogger>();
+    td.when(mockConfigStore.get(flagKey)).thenReturn(null);
+    const client_instance = new EppoReactNativeClient(mockConfigStore);
+    client_instance.setLogger(mockLogger);
+    const assignment = client_instance.getAssignment('subject-10', flagKey);
+    expect(assignment).toEqual(null);
+  });
+
   it('logs variation assignment and experiment key', () => {
     const mockConfigStore = td.object<EppoAsyncStorage>();
     const mockLogger = td.object<IAssignmentLogger>();
@@ -118,6 +163,56 @@ describe('EppoReactNativeClient E2E test', () => {
     expect(
       td.explain(mockLogger?.logAssignment).calls[0]?.args[0].allocation
     ).toEqual(`${mockExperimentConfig?.rules[0]?.allocationKey}`);
+  });
+
+  it('handles logging exception', () => {
+    const mockConfigStore = td.object<EppoAsyncStorage>();
+    const mockLogger = td.object<IAssignmentLogger>();
+    td.when(mockLogger.logAssignment(td.matchers.anything())).thenThrow(
+      new Error('logging error')
+    );
+    td.when(mockConfigStore.get(flagKey)).thenReturn(mockExperimentConfig);
+    const subjectAttributes = { foo: 3 };
+    const client_instance = new EppoReactNativeClient(mockConfigStore);
+    client_instance.setLogger(mockLogger);
+    const assignment = client_instance.getAssignment(
+      'subject-10',
+      flagKey,
+      subjectAttributes
+    );
+    expect(assignment).toEqual('control');
+  });
+
+  it('only returns variation if subject matches rules', () => {
+    const mockConfigStore = td.object<EppoAsyncStorage>();
+    const mockLogger = td.object<IAssignmentLogger>();
+    td.when(mockConfigStore.get(flagKey)).thenReturn({
+      ...mockExperimentConfig,
+      rules: [
+        {
+          allocationKey: 'allocation1',
+          conditions: [
+            {
+              operator: 'GT',
+              attribute: 'appVersion',
+              value: 10,
+            },
+          ],
+        },
+      ],
+    });
+    const client_instance = new EppoReactNativeClient(mockConfigStore);
+    client_instance.setLogger(mockLogger);
+    let assignment = client_instance.getAssignment('subject-10', flagKey, {
+      appVersion: 9,
+    });
+    expect(assignment).toEqual(null);
+    assignment = client_instance.getAssignment('subject-10', flagKey);
+    expect(assignment).toEqual(null);
+    assignment = client_instance.getAssignment('subject-10', flagKey, {
+      appVersion: 11,
+    });
+    expect(assignment).toEqual('control');
   });
 
   describe('getAssignment', () => {
