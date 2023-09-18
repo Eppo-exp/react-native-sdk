@@ -13,7 +13,7 @@ export class EppoAsyncStorage implements IConfigurationStore {
     }
   }
 
-  public get<T>(key: string): T {
+  public get(key: string) {
     return this.cache[key];
   }
 
