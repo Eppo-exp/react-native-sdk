@@ -93,8 +93,7 @@ describe('EppoReactNativeClient E2E test', () => {
   });
 
   it('logs variation assignment and experiment key', () => {
-    const mockConfigStore =
-      td.object<EppoAsyncStorage<IExperimentConfiguration>>();
+    const mockConfigStore = td.object<EppoAsyncStorage>();
     const mockLogger = td.object<IAssignmentLogger>();
     td.when(mockConfigStore.get(flagKey)).thenReturn(mockExperimentConfig);
     const subjectAttributes = { foo: 3 };
