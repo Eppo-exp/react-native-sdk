@@ -71,3 +71,5 @@ lib/
 
 .node-version
 .python-version
+
+test/data

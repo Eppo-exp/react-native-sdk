@@ -32,6 +32,9 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Download test data
+        run: make test-data
+
       - name: Run unit tests
         run: yarn test --maxWorkers=2 --coverage
 
