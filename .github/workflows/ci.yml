@@ -33,7 +33,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Download test data
-        run: make prepare
+        run: make test-data
 
       - name: Run unit tests
         run: yarn test --maxWorkers=2 --coverage

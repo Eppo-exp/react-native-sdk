@@ -37,12 +37,3 @@ test-data:
 	cp ${gitDataDir}rac-experiments-v3.json ${testDataDir}
 	cp -r ${gitDataDir}assignment-v2 ${testDataDir}
 	rm -rf ${tempDir}
-
-## prepare
-.PHONY: prepare
-prepare: test-data
-	 husky install
-	 rm -rf dist/
-	 tsc
-	 webpack
-	 api-extractor run --local
