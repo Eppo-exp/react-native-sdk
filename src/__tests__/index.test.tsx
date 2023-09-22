@@ -9,13 +9,12 @@ import * as td from 'testdouble';
 import {
   EppoReactNativeClient,
   IAssignmentLogger,
-  IEppoClient,
   init,
 } from '../../src/index';
 import type { EppoAsyncStorage } from 'src/async-storage';
 
 describe('EppoReactNativeClient E2E test', () => {
-  let client: IEppoClient;
+  let client: EppoReactNativeClient;
 
   const flagKey = 'mock-experiment';
 
