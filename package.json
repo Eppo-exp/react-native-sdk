@@ -27,6 +27,7 @@
     "!**/.*"
   ],
   "scripts": {
+    "prepare": "make test-data",
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
