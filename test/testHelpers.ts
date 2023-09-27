@@ -20,7 +20,6 @@ export interface IAssignmentTestCase {
   percentExposure: number;
   variations: IVariation[];
   subjects: string[];
-
   subjectsWithAttributes: {
     subjectKey: string;
     subjectAttributes: Record<string, any>;
