@@ -1,6 +1,6 @@
 {
   "name": "@eppo/react-native-sdk",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "test",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -51,7 +51,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@eppo/js-client-sdk-common": "1.4.1",
+    "@eppo/js-client-sdk-common": "1.5.1",
     "@react-native-async-storage/async-storage": "^1.18.0",
     "axios": "^0.27.2",
     "md5": "^2.3.0"
@@ -98,6 +98,9 @@
       "<rootDir>/example/node_modules",
       "<rootDir>/lib/"
     ],
+    "moduleNameMapper": {
+      "@eppo(.*)": "<rootDir>/node_modules/@eppo/$1"
+    },
     "setupFiles": ["./jestSetup.js"],
     "testEnvironment": "node"
   },
