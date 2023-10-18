@@ -26,6 +26,7 @@ export default function EppoRandomizationProvider({
           console.log('ASSIGNMENT', assignment);
         },
       },
+      assignmentCacheBehavior: 'non-expiring',
     }).then(() => {
       return setIsInitialized(true);
     });
