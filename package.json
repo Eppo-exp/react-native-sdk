@@ -58,7 +58,6 @@
     "md5": "^2.3.0"
   },
   "devDependencies": {
-    "@commitlint/config-conventional": "^17.0.2",
     "@evilmartians/lefthook": "^1.2.2",
     "@react-native-community/eslint-config": "^3.0.2",
     "@release-it/conventional-changelog": "^5.0.0",
@@ -106,11 +105,6 @@
       "./jestSetup.js"
     ],
     "testEnvironment": "node"
-  },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
   },
   "release-it": {
     "git": {
