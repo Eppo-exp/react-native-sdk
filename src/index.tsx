@@ -14,9 +14,6 @@ import {
 import { EppoAsyncStorage } from './async-storage';
 import { sdkName, sdkVersion } from './sdk-data';
 
-const DEFAULT_ASSIGNMENT_CACHE_BEHAVIOR = 'non-expiring';
-const DEFAULT_EXPIRING_ASSIGNMENT_CACHE_SIZE = 10_000;
-
 /**
  * Configuration used for initializing the Eppo client
  * @public
@@ -37,12 +34,6 @@ export interface IClientConfig {
    * Pass a logging implementation to send variation assignments to your data warehouse.
    */
   assignmentLogger: IAssignmentLogger;
-
-  /**
-   * Assignment cache
-   */
-  assignmentCacheBehavior?: 'non-expiring' | 'expiring' | 'disabled';
-  assigmentExpiringCacheSize?: number;
 }
 
 export { IAssignmentLogger, IAssignmentEvent, IEppoClient };
@@ -75,23 +66,7 @@ export async function init(config: IClientConfig): Promise<IEppoClient> {
   });
 
   // by default use non-expiring assignment cache.
-  // this is the recommended setting for most clients.
-  const assignmentCacheBehavior =
-    config.assignmentCacheBehavior || DEFAULT_ASSIGNMENT_CACHE_BEHAVIOR;
-  switch (assignmentCacheBehavior) {
-    case 'disabled':
-      EppoReactNativeClient.instance.disableAssignmentCache();
-      break;
-    case 'expiring':
-      const cacheSize =
-        config.assigmentExpiringCacheSize ||
-        DEFAULT_EXPIRING_ASSIGNMENT_CACHE_SIZE;
-      EppoReactNativeClient.instance.useLRUAssignmentCache(cacheSize);
-      break;
-    case 'non-expiring':
-      EppoReactNativeClient.instance.useNonExpiringAssignmentCache();
-      break;
-  }
+  EppoReactNativeClient.instance.useNonExpiringAssignmentCache();
 
   await asyncStorage.init();
 
