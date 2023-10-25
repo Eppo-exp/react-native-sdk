@@ -9,7 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@eppo/react-native-sdk": "^1.0.0",
+    "@eppo/react-native-sdk": "file:..",
     "@expo/webpack-config": "^18.0.1",
     "expo": "~49.0.16",
     "expo-status-bar": "~1.4.4",

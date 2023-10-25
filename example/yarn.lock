@@ -1226,10 +1226,8 @@
     lru-cache "^10.0.1"
     md5 "^2.3.0"
 
-"@eppo/react-native-sdk@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@eppo/react-native-sdk/-/react-native-sdk-1.0.0.tgz#e1248f60331020db83b108dda40d3d2041ffe3a9"
-  integrity sha512-IBFQjePPNL/s+YG9v7dY/cuUGpmkNNbiyL3ALa6i9p2rxqkeaQcFNHBenEV6BL1bczEp6Mx2iVaLOPavXjo77w==
+"@eppo/react-native-sdk@file:..":
+  version "1.0.1"
   dependencies:
     "@eppo/js-client-sdk-common" "1.7.0"
     "@react-native-async-storage/async-storage" "^1.18.0"
