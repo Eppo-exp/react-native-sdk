@@ -3,7 +3,8 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
-import { init } from '@eppo/react-native-sdk';
+//import { init } from '@eppo/react-native-sdk';
+const eppo = require('@eppo/react-native-sdk');
 
 interface IEppoRandomizationProvider {
   waitForInitialization?: boolean;
@@ -18,17 +19,19 @@ export default function EppoRandomizationProvider({
 }: IEppoRandomizationProvider): JSX.Element {
   const [isInitialized, setIsInitialized] = useState(false);
   useEffect(() => {
-    init({
-      baseUrl: 'https://eppo.cloud/api',
-      apiKey: '<API_KEY>',
-      assignmentLogger: {
-        logAssignment(assignment) {
-          console.log('ASSIGNMENT', assignment);
+    eppo
+      .init({
+        baseUrl: 'https://eppo.cloud/api',
+        apiKey: '<API_KEY>',
+        assignmentLogger: {
+          logAssignment(assignment: any) {
+            console.log('ASSIGNMENT', assignment);
+          },
         },
-      },
-    }).then(() => {
-      return setIsInitialized(true);
-    });
+      })
+      .then(() => {
+        return setIsInitialized(true);
+      });
   }, []);
 
   if (!waitForInitialization || isInitialized) {
