@@ -66,7 +66,7 @@ export async function init(config: IClientConfig): Promise<IEppoClient> {
   });
 
   // by default use non-expiring assignment cache.
-  EppoReactNativeClient.instance.useNonExpiringAssignmentCache();
+  EppoReactNativeClient.instance.useNonExpiringInMemoryAssignmentCache();
 
   await asyncStorage.init();
 
