@@ -1,14 +1,10 @@
-import axios from 'axios';
-
 import {
   IAssignmentLogger,
   IAssignmentEvent,
   validation,
-  constants,
-  ExperimentConfigurationRequestor,
   IEppoClient,
   EppoClient,
-  HttpClient,
+  FlagConfigurationRequestParameters,
 } from '@eppo/js-client-sdk-common';
 
 import { EppoAsyncStorage } from './async-storage';
@@ -34,6 +30,30 @@ export interface IClientConfig {
    * Pass a logging implementation to send variation assignments to your data warehouse.
    */
   assignmentLogger: IAssignmentLogger;
+
+  /***
+   * Timeout in milliseconds for the HTTPS request for the experiment configuration. (Default: 5000)
+   */
+  requestTimeoutMs?: number;
+
+  /**
+   * Number of additional times the initial configuration request will be attempted if it fails.
+   * This is the request typically synchronously waited (via await) for completion. A small wait will be
+   * done between requests. (Default: 1)
+   */
+  numInitialRequestRetries?: number;
+
+  /**
+   * Throw an error if unable to fetch an initial configuration during initialization. (default: true)
+   */
+  throwOnFailedInitialization?: boolean;
+
+  /**
+   * Number of additional times polling for updated configurations will be attempted before giving up.
+   * Polling is done after a successful initial request. Subsequent attempts are done using an exponential
+   * backoff. (Default: 7)
+   */
+  numPollRequestRetries?: number;
 }
 
 export { IAssignmentLogger, IAssignmentEvent, IEppoClient };
@@ -41,8 +61,12 @@ export { IAssignmentLogger, IAssignmentEvent, IEppoClient };
 const asyncStorage = new EppoAsyncStorage();
 
 export class EppoReactNativeClient extends EppoClient {
+  public static initialized = false;
+
   public static instance: EppoReactNativeClient = new EppoReactNativeClient(
-    asyncStorage
+    asyncStorage,
+    undefined,
+    true
   );
 }
 
@@ -54,30 +78,48 @@ export class EppoReactNativeClient extends EppoClient {
  */
 export async function init(config: IClientConfig): Promise<IEppoClient> {
   validation.validateNotBlank(config.apiKey, 'API key required');
-  const axiosInstance = axios.create({
-    baseURL: config.baseUrl || constants.BASE_URL,
-    timeout: constants.REQUEST_TIMEOUT_MILLIS,
-  });
 
-  const httpClient = new HttpClient(axiosInstance, {
-    apiKey: config.apiKey,
-    sdkName,
-    sdkVersion,
-  });
+  try {
+    // If any existing instances; ensure they are not polling
+    if (EppoReactNativeClient.instance) {
+      EppoReactNativeClient.instance.stopPolling();
+    }
 
-  // by default use non-expiring assignment cache.
-  EppoReactNativeClient.instance.useNonExpiringInMemoryAssignmentCache();
+    const requestConfiguration: FlagConfigurationRequestParameters = {
+      apiKey: config.apiKey,
+      sdkName,
+      sdkVersion,
+      baseUrl: config.baseUrl ?? undefined,
+      requestTimeoutMs: config.requestTimeoutMs ?? undefined,
+      numInitialRequestRetries: config.numInitialRequestRetries ?? undefined,
+      numPollRequestRetries: config.numPollRequestRetries ?? undefined,
+      throwOnFailedInitialization: true, // always use true here as underlying instance fetch is surrounded by try/catch
+    };
 
-  await asyncStorage.init();
+    EppoReactNativeClient.instance.setLogger(config.assignmentLogger);
 
-  EppoReactNativeClient.instance.setLogger(config.assignmentLogger);
-  const configurationRequestor = new ExperimentConfigurationRequestor(
-    asyncStorage,
-    httpClient
-  );
-  await configurationRequestor.fetchAndStoreConfigurations();
+    // by default use non-expiring assignment cache.
+    EppoReactNativeClient.instance.useNonExpiringInMemoryAssignmentCache();
+    EppoReactNativeClient.instance.setConfigurationRequestParameters(
+      requestConfiguration
+    );
 
-  return EppoReactNativeClient.instance;
+    await asyncStorage.init();
+
+    await EppoReactNativeClient.instance.fetchFlagConfigurations();
+
+    return EppoReactNativeClient.instance;
+  } catch (error) {
+    console.warn(
+      'Eppo SDK encountered an error initializing, assignment calls will return the default value and not be logged.'
+    );
+    if (config.throwOnFailedInitialization ?? true) {
+      throw error;
+    }
+  } finally {
+    EppoReactNativeClient.initialized = true;
+    return EppoReactNativeClient.instance;
+  }
 }
 
 /**

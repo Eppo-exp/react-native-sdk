@@ -19,7 +19,6 @@ export default function EppoRandomizationProvider({
   const [isInitialized, setIsInitialized] = useState(false);
   useEffect(() => {
     init({
-      baseUrl: 'https://eppo.cloud/api',
       apiKey: '<API_KEY>',
       assignmentLogger: {
         logAssignment(assignment) {
