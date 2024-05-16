@@ -2,7 +2,7 @@ import type { IConfigurationStore } from '@eppo/js-client-sdk-common';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Bump this version number when we make breaking changes to the cache.
-const STORAGE_KEY = '@eppo/sdk-cache-ufc';
+export const STORAGE_KEY = '@eppo/sdk-cache-ufc';
 
 export class EppoAsyncStorage implements IConfigurationStore {
   private cache: { [key: string]: any } = {};

@@ -1,8 +1,7 @@
-import { EppoAsyncStorage } from './async-storage';
+import { EppoAsyncStorage, STORAGE_KEY } from './async-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 describe('EppoAsyncStorage', () => {
-  const storageKey = '@eppo/sdk-cache-ufc';
   let storage: EppoAsyncStorage;
 
   beforeEach(() => {
@@ -19,7 +18,7 @@ describe('EppoAsyncStorage', () => {
       await storage.setEntries(entries);
 
       expect(AsyncStorage.setItem).toHaveBeenCalledWith(
-        storageKey,
+        STORAGE_KEY,
         JSON.stringify(entries)
       );
       expect(storage.get('key1')).toBe('newvalue1');
