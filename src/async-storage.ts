@@ -1,10 +1,12 @@
 import type { IConfigurationStore } from '@eppo/js-client-sdk-common';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const STORAGE_KEY = '@eppo/sdk-cache';
+// Bump this version number when we make breaking changes to the cache.
+export const STORAGE_KEY = '@eppo/sdk-cache-ufc';
 
 export class EppoAsyncStorage implements IConfigurationStore {
   private cache: { [key: string]: any } = {};
+  private _isInitialized = false;
 
   public async init() {
     const data = await AsyncStorage.getItem(STORAGE_KEY);
@@ -13,8 +15,16 @@ export class EppoAsyncStorage implements IConfigurationStore {
     }
   }
 
+  public isInitialized(): boolean {
+    return this._isInitialized;
+  }
+
   public get(key: string) {
     return this.cache[key];
+  }
+
+  public getKeys(): string[] {
+    return Object.keys(this.cache);
   }
 
   public setEntries<T>(entries: Record<string, T>): void {
@@ -23,5 +33,6 @@ export class EppoAsyncStorage implements IConfigurationStore {
     }
 
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(this.cache));
+    this._isInitialized = true;
   }
 }

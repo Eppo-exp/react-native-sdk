@@ -6,10 +6,15 @@ import { getInstance } from '@eppo/react-native-sdk';
 export default function TestComponent(): JSX.Element {
   const assignedVariation = React.useMemo(() => {
     const eppoClient = getInstance();
-    return eppoClient.getAssignment('<USER_ID', 'test-feature-flag');
+    return eppoClient.getStringAssignment(
+      'test-feature-flag',
+      '<USER_ID>',
+      {},
+      'default-value'
+    );
   }, []);
 
-  var text = 'In control';
+  var text = `In Variation: ${assignedVariation}`;
   if (assignedVariation === 'show-logo') {
     text = 'Assigned to logo group';
   }

@@ -7,7 +7,7 @@ runs:
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version-file: .nvmrc
+        node-version: '18.x'  # Specify the Node.js version directly here
 
     - name: Cache dependencies
       id: yarn-cache

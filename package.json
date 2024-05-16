@@ -1,6 +1,6 @@
 {
   "name": "@eppo/react-native-sdk",
-  "version": "1.1.0",
+  "version": "3.0.0",
   "description": "Eppo React Native SDK",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -41,7 +41,6 @@
     "android"
   ],
   "repository": "https://github.com/Eppo-exp/reactive-native-sdk",
-  "author": "Nick Pleis <nick@geteppo.com> (https://github.com/Nickp-eppo)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Eppo-exp/reactive-native-sdk/issues"
@@ -51,9 +50,8 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@eppo/js-client-sdk-common": "2.2.0",
+    "@eppo/js-client-sdk-common": "3.0.2",
     "@react-native-async-storage/async-storage": "^1.18.0",
-    "axios": "^1.6.0",
     "md5": "^2.3.0"
   },
   "devDependencies": {
@@ -85,7 +83,7 @@
     "react-native": "*"
   },
   "engines": {
-    "node": ">= 16.0.0"
+    "node": ">= 18.0.0"
   },
   "jest": {
     "preset": "react-native",
