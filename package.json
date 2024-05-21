@@ -1,10 +1,10 @@
 {
   "name": "@eppo/react-native-sdk",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Eppo React Native SDK",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
-  "types": "lib/typescript/src/index.d.ts",
+  "types": "lib/typescript/index.d.ts",
   "react-native": "src/index",
   "source": "src/index",
   "files": [
@@ -31,9 +31,10 @@
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "prepack": "bob build && cp -r package.json lib",
+    "prepack": "bob build && cp -r package.json lib && yarn check-types",
     "example": "yarn --cwd example",
-    "bootstrap": "yarn example && yarn install"
+    "bootstrap": "yarn example && yarn install",
+    "check-types": "node ./check-types.js"
   },
   "keywords": [
     "react-native",
