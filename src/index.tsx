@@ -79,6 +79,8 @@ export class EppoReactNativeClient extends EppoClient {
 export async function init(config: IClientConfig): Promise<IEppoClient> {
   validation.validateNotBlank(config.apiKey, 'API key required');
 
+  console.log('opana');
+
   try {
     // If any existing instances; ensure they are not polling
     if (EppoReactNativeClient.instance) {
