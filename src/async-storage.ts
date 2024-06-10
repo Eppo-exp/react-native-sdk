@@ -1,10 +1,18 @@
-import type { IConfigurationStore } from '@eppo/js-client-sdk-common';
+import type {
+  IAsyncStore,
+  IConfigurationStore,
+  ISyncStore,
+} from '@eppo/js-client-sdk-common';
+import type {
+  Flag,
+  ObfuscatedFlag,
+} from '@eppo/js-client-sdk-common/dist/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Bump this version number when we make breaking changes to the cache.
 export const STORAGE_KEY = '@eppo/sdk-cache-ufc';
 
-export class EppoAsyncStorage implements IConfigurationStore {
+class AsyncStorageStore<T> implements ISyncStore<T> {
   private cache: { [key: string]: any } = {};
   private _isInitialized = false;
 
@@ -27,12 +35,54 @@ export class EppoAsyncStorage implements IConfigurationStore {
     return Object.keys(this.cache);
   }
 
-  public setEntries<T>(entries: Record<string, T>): void {
+  public setEntries(entries: Record<string, T>): void {
     for (var key in entries) {
       this.cache[key] = entries[key];
     }
 
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(this.cache));
     this._isInitialized = true;
+  }
+}
+
+export class EppoAsyncStorage
+  implements IConfigurationStore<Flag | ObfuscatedFlag>
+{
+  servingStore: ISyncStore<Flag | ObfuscatedFlag>;
+  persistentStore: IAsyncStore<Flag | ObfuscatedFlag> | null;
+  private initialized: boolean;
+
+  constructor() {
+    this.servingStore = new AsyncStorageStore<Flag | ObfuscatedFlag>();
+    this.persistentStore = null;
+    this.initialized = false;
+  }
+
+  init(): Promise<void> {
+    this.initialized = true;
+    return Promise.resolve();
+  }
+
+  get(key: string): Flag | ObfuscatedFlag | null {
+    return this.servingStore.get(key);
+  }
+
+  getKeys(): string[] {
+    return this.servingStore.getKeys();
+  }
+
+  async isExpired(): Promise<boolean> {
+    return true;
+  }
+
+  isInitialized(): boolean {
+    return this.initialized;
+  }
+
+  async setEntries(
+    entries: Record<string, Flag | ObfuscatedFlag>
+  ): Promise<void> {
+    this.servingStore.setEntries(entries);
+    this.initialized = true;
   }
 }
