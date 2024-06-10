@@ -1,5 +1,7 @@
+import type { Flag, VariationType } from '@eppo/js-client-sdk-common';
 import { EppoAsyncStorage, STORAGE_KEY } from './async-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { Variation } from '@eppo/js-client-sdk-common/dist/interfaces';
 
 describe('EppoAsyncStorage', () => {
   let storage: EppoAsyncStorage;
@@ -10,26 +12,49 @@ describe('EppoAsyncStorage', () => {
     AsyncStorage.getItem = jest.fn();
   });
 
+  const buildFlag = (key: string, variationValues: string[]): Flag => {
+    const variations: Record<string, Variation> = {};
+    variationValues.forEach((variationValue) => {
+      variations[variationValue] = {
+        key: variationValue,
+        value: variationValue,
+      };
+    });
+    return {
+      key,
+      enabled: true,
+      variationType: 'STRING' as VariationType,
+      variations,
+      allocations: [],
+      totalShards: 1,
+    };
+  };
+
   describe('setEntries', () => {
     it('should set entries and update AsyncStorage', async () => {
       expect(storage.isInitialized()).toBe(false);
 
-      const entries = { key1: 'newvalue1', key2: 'newvalue2' };
+      const flag1 = buildFlag('flag-key1', ['control-1', 'experiment-1']);
+      const flag2 = buildFlag('flag-key2', ['control-2', 'experiment-2']);
+      const entries = { key1: flag1, key2: flag2 };
       await storage.setEntries(entries);
 
       expect(AsyncStorage.setItem).toHaveBeenCalledWith(
         STORAGE_KEY,
         JSON.stringify(entries)
       );
-      expect(storage.get('key1')).toBe('newvalue1');
-      expect(storage.get('key2')).toBe('newvalue2');
+      expect(storage.get('key1')).toEqual(flag1);
+      expect(storage.get('key2')).toEqual(flag2);
       expect(storage.isInitialized()).toBe(true);
     });
   });
 
   describe('getKeys', () => {
     it('should return all keys in the cache', async () => {
-      const entries = { key1: 'value1', key2: 'value2', key3: 'value3' };
+      const flag1 = buildFlag('flag-key1', ['control-1', 'experiment-1']);
+      const flag2 = buildFlag('flag-key2', ['control-2', 'experiment-2']);
+      const flag3 = buildFlag('flag-key3', ['control-3', 'experiment-3']);
+      const entries = { key1: flag1, key2: flag2, key3: flag3 };
       await storage.setEntries(entries);
 
       const keys = storage.getKeys();
