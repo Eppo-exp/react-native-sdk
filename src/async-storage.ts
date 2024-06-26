@@ -51,11 +51,15 @@ export class EppoAsyncStorage
   servingStore: ISyncStore<Flag | ObfuscatedFlag>;
   persistentStore: IAsyncStore<Flag | ObfuscatedFlag> | null;
   private initialized: boolean;
+  private configFetchedAt: string;
+  private configPublishedAt: string;
 
   constructor() {
     this.servingStore = new AsyncStorageStore<Flag | ObfuscatedFlag>();
     this.persistentStore = null;
     this.initialized = false;
+    this.configFetchedAt = '';
+    this.configPublishedAt = '';
   }
 
   init(): Promise<void> {
@@ -81,8 +85,25 @@ export class EppoAsyncStorage
 
   async setEntries(
     entries: Record<string, Flag | ObfuscatedFlag>
-  ): Promise<void> {
+  ): Promise<boolean> {
     this.servingStore.setEntries(entries);
     this.initialized = true;
+    return true;
+  }
+
+  public getConfigFetchedAt(): string {
+    return this.configFetchedAt;
+  }
+
+  public setConfigFetchedAt(configFetchedAt: string): void {
+    this.configFetchedAt = configFetchedAt;
+  }
+
+  public getConfigPublishedAt(): string {
+    return this.configPublishedAt;
+  }
+
+  public setConfigPublishedAt(configPublishedAt: string): void {
+    this.configPublishedAt = configPublishedAt;
   }
 }

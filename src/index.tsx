@@ -2,7 +2,6 @@ import {
   IAssignmentLogger,
   IAssignmentEvent,
   validation,
-  IEppoClient,
   EppoClient,
   FlagConfigurationRequestParameters,
 } from '@eppo/js-client-sdk-common';
@@ -56,7 +55,7 @@ export interface IClientConfig {
   numPollRequestRetries?: number;
 }
 
-export { IAssignmentLogger, IAssignmentEvent, IEppoClient };
+export { IAssignmentLogger, IAssignmentEvent, EppoClient };
 
 const asyncStorage = new EppoAsyncStorage();
 
@@ -76,7 +75,7 @@ export class EppoReactNativeClient extends EppoClient {
  * @param config client configuration
  * @public
  */
-export async function init(config: IClientConfig): Promise<IEppoClient> {
+export async function init(config: IClientConfig): Promise<EppoClient> {
   validation.validateNotBlank(config.apiKey, 'API key required');
 
   try {
@@ -127,6 +126,6 @@ export async function init(config: IClientConfig): Promise<IEppoClient> {
  * Use the method after calling init() to initialize the client.
  * @returns a singleton client instance
  */
-export function getInstance(): IEppoClient {
+export function getInstance(): EppoClient {
   return EppoReactNativeClient.instance;
 }
