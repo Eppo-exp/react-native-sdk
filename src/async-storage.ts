@@ -4,6 +4,7 @@ import type {
   ISyncStore,
 } from '@eppo/js-client-sdk-common';
 import type {
+  Environment,
   Flag,
   ObfuscatedFlag,
 } from '@eppo/js-client-sdk-common/dist/interfaces';
@@ -35,6 +36,10 @@ class AsyncStorageStore<T> implements ISyncStore<T> {
     return Object.keys(this.cache);
   }
 
+  entries(): Record<string, T> {
+    return this.cache;
+  }
+
   public setEntries(entries: Record<string, T>): void {
     for (var key in entries) {
       this.cache[key] = entries[key];
@@ -51,11 +56,16 @@ export class EppoAsyncStorage
   servingStore: ISyncStore<Flag | ObfuscatedFlag>;
   persistentStore: IAsyncStore<Flag | ObfuscatedFlag> | null;
   private initialized: boolean;
+  private environment: Environment | null = null;
+  private configFetchedAt: string | null = null;
+  private configPublishedAt: string | null = null;
 
   constructor() {
     this.servingStore = new AsyncStorageStore<Flag | ObfuscatedFlag>();
     this.persistentStore = null;
     this.initialized = false;
+    this.configFetchedAt = '';
+    this.configPublishedAt = '';
   }
 
   init(): Promise<void> {
@@ -79,10 +89,39 @@ export class EppoAsyncStorage
     return this.initialized;
   }
 
+  entries(): Record<string, Flag | ObfuscatedFlag> {
+    return this.servingStore.entries();
+  }
+
   async setEntries(
     entries: Record<string, Flag | ObfuscatedFlag>
-  ): Promise<void> {
+  ): Promise<boolean> {
     this.servingStore.setEntries(entries);
     this.initialized = true;
+    return true;
+  }
+
+  getEnvironment(): Environment | null {
+    return this.environment;
+  }
+
+  setEnvironment(environment: Environment): void {
+    this.environment = environment;
+  }
+
+  public getConfigFetchedAt(): string | null {
+    return this.configFetchedAt;
+  }
+
+  public setConfigFetchedAt(configFetchedAt: string): void {
+    this.configFetchedAt = configFetchedAt;
+  }
+
+  public getConfigPublishedAt(): string | null {
+    return this.configPublishedAt;
+  }
+
+  public setConfigPublishedAt(configPublishedAt: string): void {
+    this.configPublishedAt = configPublishedAt;
   }
 }

@@ -1213,10 +1213,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@eppo/js-client-sdk-common@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@eppo/js-client-sdk-common/-/js-client-sdk-common-3.2.0.tgz#e96895e3c74471f41892feb31d56c67f36c1b3e6"
-  integrity sha512-ua+4Mez7Ti/4XDPSKWbR8gg611UN9XnvModWAE7sjrHP60QNfmhvW6m+jXepDgQFRsybU0xXrddZQiVbDcCrUQ==
+"@eppo/js-client-sdk-common@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@eppo/js-client-sdk-common/-/js-client-sdk-common-4.0.0.tgz#39dea02745b641915fa4e925d75a12ca5b1e9503"
+  integrity sha512-aMru8KESyNJDU/fm5jVENUhpa1jB88FUncT/xnjgiWPuTLLrpi10Qshoj7Lloi8IjlwFSFMjDjtpuQoLKPpQXA==
   dependencies:
     js-base64 "^3.7.7"
     md5 "^2.3.0"
