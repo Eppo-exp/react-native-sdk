@@ -110,6 +110,7 @@ export async function init(config: IClientConfig): Promise<EppoClient> {
 
     await EppoReactNativeClient.instance.fetchFlagConfigurations();
 
+    EppoReactNativeClient.initialized = true;
     return EppoReactNativeClient.instance;
   } catch (error) {
     console.warn(
@@ -118,8 +119,6 @@ export async function init(config: IClientConfig): Promise<EppoClient> {
     if (config.throwOnFailedInitialization ?? true) {
       throw error;
     }
-  } finally {
-    EppoReactNativeClient.initialized = true;
     return EppoReactNativeClient.instance;
   }
 }

@@ -6,9 +6,9 @@ import {
   Flag,
   IAssignmentLogger,
 } from '@eppo/js-client-sdk-common';
-import { EppoReactNativeClient } from '..';
+import { EppoReactNativeClient, init } from '..';
 
-describe('EppoReactNativeClient E2E test', () => {
+describe('EppoReactNativeClient integration test', () => {
   const flagKey = 'mock-experiment';
 
   const mockExperimentConfig: Flag = {
@@ -93,6 +93,14 @@ describe('EppoReactNativeClient E2E test', () => {
     }) as jest.Mock;
   });
 
+  beforeEach(() => {
+    EppoReactNativeClient.initialized = false;
+  });
+
+  afterAll(() => {
+    EppoReactNativeClient.initialized = false;
+  });
+
   it('returns default value when experiment config is absent', () => {
     const mockConfigStore = td.object<EppoAsyncStorage>();
     const mockLogger = td.object<IAssignmentLogger>();
@@ -152,5 +160,70 @@ describe('EppoReactNativeClient E2E test', () => {
       'default-value'
     );
     expect(assignment).toEqual('control');
+  });
+
+  it('handles a successful init', async () => {
+    global.fetch = jest.fn(() => {
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(mockExperimentConfig),
+      });
+    }) as jest.Mock;
+    await init({
+      apiKey: 'some-key',
+      assignmentLogger: {
+        logAssignment(assignment) {
+          console.log('TODO: log', assignment);
+        },
+      },
+      throwOnFailedInitialization: false,
+    });
+    expect(EppoReactNativeClient.initialized).toBe(true);
+  });
+
+  it('handles errors during init with throwOnFailedInitialization set to true', async () => {
+    global.fetch = jest.fn(() => {
+      return Promise.reject({
+        ok: false,
+        status: 500,
+        text: 'Network error',
+      });
+    }) as jest.Mock;
+    expect.assertions(2);
+    try {
+      await init({
+        apiKey: 'some-key',
+        assignmentLogger: {
+          logAssignment(assignment) {
+            console.log('TODO: log', assignment);
+          },
+        },
+        throwOnFailedInitialization: true,
+      });
+    } catch (err: any) {
+      expect(err.message).toBe('Network error');
+    }
+    expect(EppoReactNativeClient.initialized).toBe(false);
+  });
+
+  it('handles errors during init with throwOnFailedInitialization set to false', async () => {
+    global.fetch = jest.fn(() => {
+      return Promise.reject({
+        ok: false,
+        status: 500,
+        text: 'Network error',
+      });
+    }) as jest.Mock;
+    await init({
+      apiKey: 'some-key',
+      assignmentLogger: {
+        logAssignment(assignment) {
+          console.log('TODO: log', assignment);
+        },
+      },
+      throwOnFailedInitialization: false,
+    });
+    expect(EppoReactNativeClient.initialized).toBe(false);
   });
 });
