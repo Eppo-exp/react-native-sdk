@@ -51,7 +51,14 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+
     steps:
+      - name: Display Testing Details
+        run: |
+          echo "Running SDK Test using"
+          echo "Test Data: sdk-test-data@${TEST_DATA_BRANCH_NAME}"
+          echo "SDK Branch: php-sdk@${SDK_BRANCH_NAME}"
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
