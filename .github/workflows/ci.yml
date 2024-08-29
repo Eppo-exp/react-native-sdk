@@ -1,4 +1,9 @@
 name: CI
+
+env:
+  SDK_BRANCH_NAME: ${{ inputs.sdk_branch  || github.head_ref || github.ref_name || 'main' }}
+  TEST_DATA_BRANCH_NAME: ${{ inputs.test_data_branch || 'main' }}
+
 on:
   push:
     branches:
@@ -6,13 +11,29 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
+  workflow_call:
+    inputs:
+      test_data_branch:
+        type: string
+        description: The branch in sdk-test-data to target for testcase files
+        required: false
+        default: main
+      sdk_branch:
+        type: string
+        description: The branch of the SDK to test
+        required: false
+      
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          repository: Eppo-exp/react-native-sdk
+          ref: ${{ env.SDK_BRANCH_NAME}}
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -33,6 +54,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          repository: Eppo-exp/react-native-sdk
+          ref: ${{ env.SDK_BRANCH_NAME}}
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -46,13 +70,16 @@ jobs:
         run: yarn install
 
       - name: Run unit tests
-        run: yarn test --maxWorkers=2 --coverage
+        run: make test branchName=${{env.TEST_DATA_BRANCH_NAME}}
 
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          repository: Eppo-exp/react-native-sdk
+          ref: ${{ env.SDK_BRANCH_NAME}}
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
