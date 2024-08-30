@@ -37,3 +37,7 @@ test-data:
 	cp ${gitDataDir}rac-experiments-v3.json ${testDataDir}
 	cp -r ${gitDataDir}assignment-v2 ${testDataDir}
 	rm -rf ${tempDir}
+
+.PHONY: test
+test: test-data
+	yarn test --maxWorkers=2 --coverage
