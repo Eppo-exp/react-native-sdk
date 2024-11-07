@@ -54,6 +54,21 @@ export interface IClientConfig {
    * backoff. (Default: 7)
    */
   numPollRequestRetries?: number;
+
+  /**
+   * Poll for new configurations even if the initial configuration request failed. (default: false)
+   */
+  pollAfterFailedInitialization?: boolean;
+
+  /**
+   * Poll for new configurations (every `pollingIntervalMs`) after successfully requesting the initial configuration. (default: false)
+   */
+  pollAfterSuccessfulInitialization?: boolean;
+
+  /**
+   * Amount of time to wait between API calls to refresh configuration data. Default of 30_000 (30 seconds).
+   */
+  pollingIntervalMs?: number;
 }
 
 export { IAssignmentDetails, IAssignmentLogger, IAssignmentEvent, EppoClient };
@@ -96,6 +111,11 @@ export async function init(config: IClientConfig): Promise<EppoClient> {
       numInitialRequestRetries: config.numInitialRequestRetries ?? undefined,
       numPollRequestRetries: config.numPollRequestRetries ?? undefined,
       throwOnFailedInitialization: true, // always use true here as underlying instance fetch is surrounded by try/catch
+      pollAfterSuccessfulInitialization:
+        config.pollAfterSuccessfulInitialization ?? false,
+      pollAfterFailedInitialization:
+        config.pollAfterFailedInitialization ?? false,
+      pollingIntervalMs: config.pollingIntervalMs ?? undefined,
     };
 
     EppoReactNativeClient.instance.setLogger(config.assignmentLogger);
