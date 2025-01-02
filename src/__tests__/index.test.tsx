@@ -105,7 +105,9 @@ describe('EppoReactNativeClient integration test', () => {
     const mockConfigStore = td.object<EppoAsyncStorage>();
     const mockLogger = td.object<IAssignmentLogger>();
     td.when(mockConfigStore.get(flagKey)).thenReturn(null);
-    const client_instance = new EppoReactNativeClient(mockConfigStore);
+    const client_instance = new EppoReactNativeClient({
+      flagConfigurationStore: mockConfigStore,
+    });
     client_instance.setLogger(mockLogger);
     const assignment = client_instance.getStringAssignment(
       flagKey,
@@ -120,7 +122,9 @@ describe('EppoReactNativeClient integration test', () => {
     const mockConfigStore = td.object<EppoAsyncStorage>();
     const mockLogger = td.object<IAssignmentLogger>();
     td.when(mockConfigStore.get(flagKey)).thenReturn(mockExperimentConfig);
-    const client_instance = new EppoReactNativeClient(mockConfigStore);
+    const client_instance = new EppoReactNativeClient({
+      flagConfigurationStore: mockConfigStore,
+    });
     client_instance.setLogger(mockLogger);
     const assignment = client_instance.getStringAssignment(
       flagKey,
@@ -151,7 +155,9 @@ describe('EppoReactNativeClient integration test', () => {
       new Error('logging error')
     );
     td.when(mockConfigStore.get(flagKey)).thenReturn(mockExperimentConfig);
-    const client_instance = new EppoReactNativeClient(mockConfigStore);
+    const client_instance = new EppoReactNativeClient({
+      flagConfigurationStore: mockConfigStore,
+    });
     client_instance.setLogger(mockLogger);
     const assignment = client_instance.getStringAssignment(
       flagKey,

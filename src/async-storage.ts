@@ -3,10 +3,11 @@ import type {
   IConfigurationStore,
   ISyncStore,
 } from '@eppo/js-client-sdk-common';
-import type {
-  Environment,
-  Flag,
-  ObfuscatedFlag,
+import {
+  type Environment,
+  type Flag,
+  FormatEnum,
+  type ObfuscatedFlag,
 } from '@eppo/js-client-sdk-common/dist/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -59,6 +60,7 @@ export class EppoAsyncStorage
   private environment: Environment | null = null;
   private configFetchedAt: string | null = null;
   private configPublishedAt: string | null = null;
+  private format: FormatEnum | null = null;
 
   constructor() {
     this.servingStore = new AsyncStorageStore<Flag | ObfuscatedFlag>();
@@ -66,6 +68,7 @@ export class EppoAsyncStorage
     this.initialized = false;
     this.configFetchedAt = '';
     this.configPublishedAt = '';
+    this.format = FormatEnum.CLIENT;
   }
 
   init(): Promise<void> {
@@ -123,5 +126,13 @@ export class EppoAsyncStorage
 
   public setConfigPublishedAt(configPublishedAt: string): void {
     this.configPublishedAt = configPublishedAt;
+  }
+
+  getFormat(): FormatEnum | null {
+    return this.format;
+  }
+
+  setFormat(format: FormatEnum): void {
+    this.format = format;
   }
 }

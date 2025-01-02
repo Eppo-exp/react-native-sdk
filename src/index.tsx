@@ -78,13 +78,10 @@ const asyncStorage = new EppoAsyncStorage();
 export class EppoReactNativeClient extends EppoClient {
   public static initialized = false;
 
-  public static instance: EppoReactNativeClient = new EppoReactNativeClient(
-    asyncStorage,
-    undefined,
-    undefined,
-    undefined,
-    true
-  );
+  public static instance: EppoReactNativeClient = new EppoReactNativeClient({
+    flagConfigurationStore: asyncStorage,
+    isObfuscated: true,
+  });
 }
 
 /**

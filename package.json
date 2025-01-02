@@ -1,6 +1,6 @@
 {
   "name": "@eppo/react-native-sdk",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "Eppo React Native SDK",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -51,7 +51,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@eppo/js-client-sdk-common": "4.3.0",
+    "@eppo/js-client-sdk-common": "^4.7.1",
     "@react-native-async-storage/async-storage": "^1.18.0",
     "md5": "^2.3.0"
   },
