@@ -24,18 +24,17 @@ help: Makefile
 	@sed -n 's/^##//p' $<
 
 ## test-data
-testDataDir := test/data/
+testDataDir := src/__tests__/data/
 tempDir := ${testDataDir}temp/
 gitDataDir := ${tempDir}sdk-test-data/
 branchName := main
 githubRepoLink := https://github.com/Eppo-exp/sdk-test-data.git
 .PHONY: test-data
-test-data: 
+test-data:
 	rm -rf $(testDataDir)
 	mkdir -p $(tempDir)
 	git clone -b ${branchName} --depth 1 --single-branch ${githubRepoLink} ${gitDataDir}
-	cp ${gitDataDir}rac-experiments-v3.json ${testDataDir}
-	cp -r ${gitDataDir}assignment-v2 ${testDataDir}
+	cp -r ${gitDataDir}ufc ${testDataDir}
 	rm -rf ${tempDir}
 
 .PHONY: test

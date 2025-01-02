@@ -5,8 +5,17 @@ import {
   VariationType,
   Flag,
   IAssignmentLogger,
+  type IAssignmentEvent,
 } from '@eppo/js-client-sdk-common';
-import { EppoReactNativeClient, init } from '..';
+import { EppoReactNativeClient, getInstance, init } from '..';
+import {
+  getTestAssignments,
+  type IAssignmentTestCase,
+  OBFUSCATED_MOCK_UFC_RESPONSE_FILE,
+  readAssignmentTestData,
+  readMockUfcResponse,
+  validateTestAssignments,
+} from './testHelpers';
 
 describe('EppoReactNativeClient integration test', () => {
   const flagKey = 'mock-experiment';
@@ -232,4 +241,61 @@ describe('EppoReactNativeClient integration test', () => {
     });
     expect(EppoReactNativeClient.initialized).toBe(false);
   });
+});
+
+describe('UFC Obfuscated Test Cases', () => {
+  beforeAll(async () => {
+    global.fetch = jest.fn(() => {
+      const ufc = readMockUfcResponse(OBFUSCATED_MOCK_UFC_RESPONSE_FILE);
+
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(ufc),
+      });
+    }) as jest.Mock;
+
+    EppoReactNativeClient.initialized = false;
+    await init({
+      apiKey: 'dummy api key',
+      assignmentLogger: { logAssignment(_assignment: IAssignmentEvent) {} },
+    });
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
+  it.each(readAssignmentTestData())(
+    'test variation assignment splits',
+    async ({
+      flag,
+      variationType,
+      defaultValue,
+      subjects,
+    }: IAssignmentTestCase) => {
+      const client = getInstance();
+
+      const typeAssignmentFunctions = {
+        [VariationType.BOOLEAN]: client.getBoolAssignment.bind(client),
+        [VariationType.NUMERIC]: client.getNumericAssignment.bind(client),
+        [VariationType.INTEGER]: client.getIntegerAssignment.bind(client),
+        [VariationType.STRING]: client.getStringAssignment.bind(client),
+        [VariationType.JSON]: client.getJSONAssignment.bind(client),
+      };
+
+      const assignmentFn = typeAssignmentFunctions[variationType];
+      if (!assignmentFn) {
+        throw new Error(`Unknown variation type: ${variationType}`);
+      }
+
+      const assignments = getTestAssignments(
+        { flag, variationType, defaultValue, subjects },
+        assignmentFn,
+        true
+      );
+
+      validateTestAssignments(assignments, flag);
+    }
+  );
 });
