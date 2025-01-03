@@ -106,7 +106,9 @@ describe('EppoReactNativeClient integration test', () => {
   });
 
   afterAll(() => {
+    getInstance()?.stopPolling();
     EppoReactNativeClient.initialized = false;
+    jest.restoreAllMocks();
   });
 
   it('returns default value when experiment config is absent', () => {
@@ -262,6 +264,7 @@ describe('UFC Obfuscated Test Cases', () => {
   });
 
   afterAll(() => {
+    getInstance()?.stopPolling();
     jest.restoreAllMocks();
   });
 

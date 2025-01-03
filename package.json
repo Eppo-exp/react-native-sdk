@@ -89,10 +89,7 @@
   },
   "jest": {
     "preset": "react-native",
-    "modulePathIgnorePatterns": [
-      "<rootDir>/example/node_modules",
-      "<rootDir>/lib/"
-    ],
+    "testMatch": ["<rootDir>/src/__tests__/**/*.(spec|test).[jt]s?(x)"],
     "moduleNameMapper": {
       "@eppo(.*)": "<rootDir>/node_modules/@eppo/$1"
     },
