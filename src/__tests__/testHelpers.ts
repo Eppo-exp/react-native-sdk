@@ -27,19 +27,28 @@ export interface IAssignmentTestCase {
 export function readMockUfcResponse(filename: string): {
   flags: Record<string, Flag>;
 } {
-  return JSON.parse(fs.readFileSync(TEST_DATA_DIR + filename, 'utf-8'));
+  return JSON.parse(
+    fs.readFileSync(path.join(TEST_DATA_DIR, filename), 'utf-8')
+  );
 }
 
-export function readAssignmentTestData(): IAssignmentTestCase[] {
-  const testCaseData: IAssignmentTestCase[] = [];
-  const testCaseFiles = fs.readdirSync(ASSIGNMENT_TEST_DATA_DIR);
-  testCaseFiles.forEach((file) => {
-    const testCase = JSON.parse(
-      fs.readFileSync(path.join(ASSIGNMENT_TEST_DATA_DIR, file), 'utf8')
-    );
-    testCaseData.push(testCase);
+export function testCasesByFileName(): Record<string, IAssignmentTestCase> {
+  const testDirectory = ASSIGNMENT_TEST_DATA_DIR;
+  const testCasesWithFileName: Array<
+    IAssignmentTestCase & { fileName: string }
+  > = fs.readdirSync(testDirectory).map((fileName) => ({
+    ...JSON.parse(fs.readFileSync(path.join(testDirectory, fileName), 'utf8')),
+    fileName,
+  }));
+  if (!testCasesWithFileName.length) {
+    throw new Error('No test cases at ' + testDirectory);
+  }
+  const mappedTestCase: Record<string, IAssignmentTestCase> = {};
+  testCasesWithFileName.forEach((testCaseWithFileName) => {
+    mappedTestCase[testCaseWithFileName.fileName] = testCaseWithFileName;
   });
-  return testCaseData;
+
+  return mappedTestCase;
 }
 
 export function getTestAssignments(
@@ -75,6 +84,7 @@ export function validateTestAssignments(
   }[],
   flag: string
 ) {
+  expect(assignments.length).toBeGreaterThan(0);
   for (const { subject, assignment } of assignments) {
     if (typeof assignment !== 'object') {
       // the expect works well for objects, but this comparison does not

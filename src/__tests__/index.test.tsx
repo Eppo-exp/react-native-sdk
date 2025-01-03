@@ -10,10 +10,9 @@ import {
 import { EppoReactNativeClient, getInstance, init } from '..';
 import {
   getTestAssignments,
-  type IAssignmentTestCase,
   OBFUSCATED_MOCK_UFC_RESPONSE_FILE,
-  readAssignmentTestData,
   readMockUfcResponse,
+  testCasesByFileName,
   validateTestAssignments,
 } from './testHelpers';
 
@@ -266,18 +265,21 @@ describe('UFC Obfuscated Test Cases', () => {
     jest.restoreAllMocks();
   });
 
-  it.each(readAssignmentTestData())(
-    'test variation assignment splits',
-    async ({
-      flag,
-      variationType,
-      defaultValue,
-      subjects,
-    }: IAssignmentTestCase) => {
+  const testCases = testCasesByFileName();
+
+  it.each(Object.keys(testCases))(
+    'Shared obfuscated test case - %s',
+    async (fileName: string) => {
+      const testCase = testCases[fileName];
+      if (!testCase) {
+        throw new Error('Test case failed to load from ' + fileName);
+      }
+      const { flag, defaultValue, subjects, variationType } = testCase;
+
       const client = getInstance();
 
       const typeAssignmentFunctions = {
-        [VariationType.BOOLEAN]: client.getBoolAssignment.bind(client),
+        [VariationType.BOOLEAN]: client.getBooleanAssignment.bind(client),
         [VariationType.NUMERIC]: client.getNumericAssignment.bind(client),
         [VariationType.INTEGER]: client.getIntegerAssignment.bind(client),
         [VariationType.STRING]: client.getStringAssignment.bind(client),
