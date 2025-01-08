@@ -5,8 +5,16 @@ import {
   VariationType,
   Flag,
   IAssignmentLogger,
+  type IAssignmentEvent,
 } from '@eppo/js-client-sdk-common';
-import { EppoReactNativeClient, init } from '..';
+import { EppoReactNativeClient, getInstance, init } from '..';
+import {
+  getTestAssignments,
+  OBFUSCATED_MOCK_UFC_RESPONSE_FILE,
+  readMockUfcResponse,
+  testCasesByFileName,
+  validateTestAssignments,
+} from './testHelpers';
 
 describe('EppoReactNativeClient integration test', () => {
   const flagKey = 'mock-experiment';
@@ -98,14 +106,18 @@ describe('EppoReactNativeClient integration test', () => {
   });
 
   afterAll(() => {
+    getInstance()?.stopPolling();
     EppoReactNativeClient.initialized = false;
+    jest.restoreAllMocks();
   });
 
   it('returns default value when experiment config is absent', () => {
     const mockConfigStore = td.object<EppoAsyncStorage>();
     const mockLogger = td.object<IAssignmentLogger>();
     td.when(mockConfigStore.get(flagKey)).thenReturn(null);
-    const client_instance = new EppoReactNativeClient(mockConfigStore);
+    const client_instance = new EppoReactNativeClient({
+      flagConfigurationStore: mockConfigStore,
+    });
     client_instance.setLogger(mockLogger);
     const assignment = client_instance.getStringAssignment(
       flagKey,
@@ -120,7 +132,9 @@ describe('EppoReactNativeClient integration test', () => {
     const mockConfigStore = td.object<EppoAsyncStorage>();
     const mockLogger = td.object<IAssignmentLogger>();
     td.when(mockConfigStore.get(flagKey)).thenReturn(mockExperimentConfig);
-    const client_instance = new EppoReactNativeClient(mockConfigStore);
+    const client_instance = new EppoReactNativeClient({
+      flagConfigurationStore: mockConfigStore,
+    });
     client_instance.setLogger(mockLogger);
     const assignment = client_instance.getStringAssignment(
       flagKey,
@@ -151,7 +165,9 @@ describe('EppoReactNativeClient integration test', () => {
       new Error('logging error')
     );
     td.when(mockConfigStore.get(flagKey)).thenReturn(mockExperimentConfig);
-    const client_instance = new EppoReactNativeClient(mockConfigStore);
+    const client_instance = new EppoReactNativeClient({
+      flagConfigurationStore: mockConfigStore,
+    });
     client_instance.setLogger(mockLogger);
     const assignment = client_instance.getStringAssignment(
       flagKey,
@@ -226,4 +242,65 @@ describe('EppoReactNativeClient integration test', () => {
     });
     expect(EppoReactNativeClient.initialized).toBe(false);
   });
+});
+
+describe('UFC Obfuscated Test Cases', () => {
+  beforeAll(async () => {
+    global.fetch = jest.fn(() => {
+      const ufc = readMockUfcResponse(OBFUSCATED_MOCK_UFC_RESPONSE_FILE);
+
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(ufc),
+      });
+    }) as jest.Mock;
+
+    EppoReactNativeClient.initialized = false;
+    await init({
+      apiKey: 'dummy api key',
+      assignmentLogger: { logAssignment(_assignment: IAssignmentEvent) {} },
+    });
+  });
+
+  afterAll(() => {
+    getInstance()?.stopPolling();
+    jest.restoreAllMocks();
+  });
+
+  const testCases = testCasesByFileName();
+
+  it.each(Object.keys(testCases))(
+    'Shared obfuscated test case - %s',
+    async (fileName: string) => {
+      const testCase = testCases[fileName];
+      if (!testCase) {
+        throw new Error('Test case failed to load from ' + fileName);
+      }
+      const { flag, defaultValue, subjects, variationType } = testCase;
+
+      const client = getInstance();
+
+      const typeAssignmentFunctions = {
+        [VariationType.BOOLEAN]: client.getBooleanAssignment.bind(client),
+        [VariationType.NUMERIC]: client.getNumericAssignment.bind(client),
+        [VariationType.INTEGER]: client.getIntegerAssignment.bind(client),
+        [VariationType.STRING]: client.getStringAssignment.bind(client),
+        [VariationType.JSON]: client.getJSONAssignment.bind(client),
+      };
+
+      const assignmentFn = typeAssignmentFunctions[variationType];
+      if (!assignmentFn) {
+        throw new Error(`Unknown variation type: ${variationType}`);
+      }
+
+      const assignments = getTestAssignments(
+        { flag, variationType, defaultValue, subjects },
+        assignmentFn,
+        true
+      );
+
+      validateTestAssignments(assignments, flag);
+    }
+  );
 });

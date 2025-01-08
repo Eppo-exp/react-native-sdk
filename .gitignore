@@ -72,4 +72,4 @@ lib/
 .node-version
 .python-version
 
-test/data
+src/__tests__/data
