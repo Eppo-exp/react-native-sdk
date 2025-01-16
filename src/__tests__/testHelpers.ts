@@ -11,6 +11,15 @@ export const TEST_DATA_DIR = path.resolve(__dirname, 'data', 'ufc');
 export const ASSIGNMENT_TEST_DATA_DIR = path.join(TEST_DATA_DIR, 'tests');
 export const OBFUSCATED_MOCK_UFC_RESPONSE_FILE = `flags-v1-obfuscated.json`;
 
+const TEST_CONFIGURATION_WIRE_DATA_DIR = path.resolve(
+  __dirname,
+  'data',
+  'configuration-wire'
+);
+const MOCK_PRECOMPUTED_FILENAME = 'precomputed-v1';
+export const MOCK_PRECOMPUTED_WIRE_FILE = `${MOCK_PRECOMPUTED_FILENAME}.json`;
+export const MOCK_DEOBFUSCATED_PRECOMPUTED_RESPONSE_FILE = `${MOCK_PRECOMPUTED_WIRE_FILE}-deobfuscated.json`;
+
 export interface SubjectTestCase {
   subjectKey: string;
   subjectAttributes: Record<string, AttributeType>;
@@ -29,6 +38,13 @@ export function readMockUfcResponse(filename: string): {
 } {
   return JSON.parse(
     fs.readFileSync(path.join(TEST_DATA_DIR, filename), 'utf-8')
+  );
+}
+
+export function readMockPrecomputedResponse(filename: string): string {
+  return fs.readFileSync(
+    path.join(TEST_CONFIGURATION_WIRE_DATA_DIR, filename),
+    'utf-8'
   );
 }
 

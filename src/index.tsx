@@ -5,75 +5,39 @@ import {
   EppoClient,
   FlagConfigurationRequestParameters,
   IAssignmentDetails,
+  EppoPrecomputedClient,
+  IConfigurationStore,
+  MemoryOnlyConfigurationStore,
+  PrecomputedFlagsRequestParameters,
+  Subject,
 } from '@eppo/js-client-sdk-common';
 
 import { EppoAsyncStorage } from './async-storage';
 import { sdkName, sdkVersion } from './sdk-data';
+import type {
+  IClientConfig,
+  IPrecomputedClientConfig,
+} from './i-client-config';
+import type {
+  IObfuscatedPrecomputedBandit,
+  PrecomputedFlag,
+} from '@eppo/js-client-sdk-common/dist/interfaces';
 
-/**
- * Configuration used for initializing the Eppo client
- * @public
- */
-export interface IClientConfig {
-  /**
-   * Eppo API key
-   */
-  apiKey: string;
-
-  /**
-   * Base URL of the Eppo API.
-   * Clients should use the default setting in most cases.
-   */
-  baseUrl?: string;
-
-  /**
-   * Pass a logging implementation to send variation assignments to your data warehouse.
-   */
-  assignmentLogger: IAssignmentLogger;
-
-  /***
-   * Timeout in milliseconds for the HTTPS request for the experiment configuration. (Default: 5000)
-   */
-  requestTimeoutMs?: number;
-
-  /**
-   * Number of additional times the initial configuration request will be attempted if it fails.
-   * This is the request typically synchronously waited (via await) for completion. A small wait will be
-   * done between requests. (Default: 1)
-   */
-  numInitialRequestRetries?: number;
-
-  /**
-   * Throw an error if unable to fetch an initial configuration during initialization. (default: true)
-   */
-  throwOnFailedInitialization?: boolean;
-
-  /**
-   * Number of additional times polling for updated configurations will be attempted before giving up.
-   * Polling is done after a successful initial request. Subsequent attempts are done using an exponential
-   * backoff. (Default: 7)
-   */
-  numPollRequestRetries?: number;
-
-  /**
-   * Poll for new configurations even if the initial configuration request failed. (default: false)
-   */
-  pollAfterFailedInitialization?: boolean;
-
-  /**
-   * Poll for new configurations (every `pollingIntervalMs`) after successfully requesting the initial configuration. (default: false)
-   */
-  pollAfterSuccessfulInitialization?: boolean;
-
-  /**
-   * Amount of time to wait between API calls to refresh configuration data. Default of 30_000 (30 seconds).
-   */
-  pollingIntervalMs?: number;
-}
-
-export { IAssignmentDetails, IAssignmentLogger, IAssignmentEvent, EppoClient };
+export {
+  IAssignmentDetails,
+  IAssignmentLogger,
+  IAssignmentEvent,
+  EppoClient,
+  IClientConfig,
+  IPrecomputedClientConfig,
+};
 
 const asyncStorage = new EppoAsyncStorage();
+
+const memoryOnlyPrecomputedFlagsStore: IConfigurationStore<PrecomputedFlag> =
+  new MemoryOnlyConfigurationStore();
+const memoryOnlyPrecomputedBanditsStore: IConfigurationStore<IObfuscatedPrecomputedBandit> =
+  new MemoryOnlyConfigurationStore();
 
 export class EppoReactNativeClient extends EppoClient {
   public static initialized = false;
@@ -147,4 +111,89 @@ export async function init(config: IClientConfig): Promise<EppoClient> {
  */
 export function getInstance(): EppoClient {
   return EppoReactNativeClient.instance;
+}
+
+export class EppoPrecomputedReactNativeClient extends EppoPrecomputedClient {
+  public static initialized = false;
+
+  public static instance: EppoPrecomputedReactNativeClient =
+    new EppoPrecomputedReactNativeClient({
+      precomputedFlagStore: memoryOnlyPrecomputedFlagsStore,
+      subject: {
+        subjectKey: '',
+        subjectAttributes: {},
+      },
+    });
+}
+
+/**
+ * Initializes the Eppo precomputed client with configuration parameters.
+ * This method should be called once on application startup.
+ * @param config - client configuration
+ * @public
+ */
+export async function precomputedInit(
+  config: IPrecomputedClientConfig
+): Promise<EppoPrecomputedClient> {
+  if (EppoPrecomputedReactNativeClient.initialized) {
+    return EppoPrecomputedReactNativeClient.instance;
+  }
+
+  validation.validateNotBlank(config.apiKey, 'API key required');
+  validation.validateNotBlank(
+    config.precompute.subjectKey,
+    'Subject key required'
+  );
+
+  const {
+    apiKey,
+    precompute: { subjectKey, subjectAttributes = {} },
+    baseUrl,
+    requestTimeoutMs,
+    numInitialRequestRetries,
+    numPollRequestRetries,
+    pollingIntervalMs,
+    pollAfterSuccessfulInitialization = false,
+    pollAfterFailedInitialization = false,
+    skipInitialRequest = false,
+  } = config;
+
+  // Set up parameters for requesting updated configurations
+  const requestParameters: PrecomputedFlagsRequestParameters = {
+    apiKey,
+    sdkName,
+    sdkVersion,
+    baseUrl,
+    requestTimeoutMs,
+    numInitialRequestRetries,
+    numPollRequestRetries,
+    pollAfterSuccessfulInitialization,
+    pollAfterFailedInitialization,
+    pollingIntervalMs,
+    throwOnFailedInitialization: true, // always use true here as underlying instance fetch is surrounded by try/catch
+    skipInitialPoll: skipInitialRequest,
+  };
+
+  const subject: Subject = { subjectKey, subjectAttributes };
+
+  EppoPrecomputedReactNativeClient.instance =
+    new EppoPrecomputedReactNativeClient({
+      precomputedFlagStore: memoryOnlyPrecomputedFlagsStore,
+      requestParameters,
+      subject,
+      precomputedBanditStore: memoryOnlyPrecomputedBanditsStore,
+    });
+
+  EppoPrecomputedReactNativeClient.instance.setAssignmentLogger(
+    config.assignmentLogger
+  );
+  if (config.banditLogger) {
+    EppoPrecomputedReactNativeClient.instance.setBanditLogger(
+      config.banditLogger
+    );
+  }
+  await EppoPrecomputedReactNativeClient.instance.fetchPrecomputedFlags();
+
+  EppoPrecomputedReactNativeClient.initialized = true;
+  return EppoPrecomputedReactNativeClient.instance;
 }

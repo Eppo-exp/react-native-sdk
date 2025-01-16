@@ -6,11 +6,20 @@ import {
   Flag,
   IAssignmentLogger,
   type IAssignmentEvent,
+  IPrecomputedConfigurationResponse,
 } from '@eppo/js-client-sdk-common';
-import { EppoReactNativeClient, getInstance, init } from '..';
+import {
+  EppoPrecomputedReactNativeClient,
+  EppoReactNativeClient,
+  getInstance,
+  init,
+  precomputedInit,
+} from '..';
 import {
   getTestAssignments,
+  MOCK_PRECOMPUTED_WIRE_FILE,
   OBFUSCATED_MOCK_UFC_RESPONSE_FILE,
+  readMockPrecomputedResponse,
   readMockUfcResponse,
   testCasesByFileName,
   validateTestAssignments,
@@ -303,4 +312,88 @@ describe('UFC Obfuscated Test Cases', () => {
       validateTestAssignments(assignments, flag);
     }
   );
+});
+
+describe('EppoPrecomputedReactNativeClient E2E test', () => {
+  let globalClient: EppoPrecomputedReactNativeClient;
+  let mockLogger: IAssignmentLogger;
+
+  beforeAll(async () => {
+    global.fetch = jest.fn(() => {
+      const precomputedConfiguration = readMockPrecomputedResponse(
+        MOCK_PRECOMPUTED_WIRE_FILE
+      );
+      const precomputedResponse: IPrecomputedConfigurationResponse = JSON.parse(
+        JSON.parse(precomputedConfiguration).precomputed.response
+      );
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(precomputedResponse),
+      });
+    }) as jest.Mock;
+
+    mockLogger = td.object<IAssignmentLogger>();
+
+    globalClient = await precomputedInit({
+      apiKey: 'dummy',
+      baseUrl: 'http://127.0.0.1:4000',
+      assignmentLogger: mockLogger,
+      precompute: {
+        subjectKey: 'test-subject',
+        subjectAttributes: { attr1: 'value1' },
+      },
+    });
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('returns correct assignments for different value types', () => {
+    expect(globalClient.getStringAssignment('string-flag', 'default')).toBe(
+      'red'
+    );
+    expect(globalClient.getBooleanAssignment('boolean-flag', false)).toBe(true);
+    expect(globalClient.getNumericAssignment('numeric-flag', 0)).toBe(3.14);
+    expect(globalClient.getIntegerAssignment('integer-flag', 0)).toBe(42);
+    expect(globalClient.getJSONAssignment('json-flag', {})).toEqual({
+      key: 'value',
+      number: 123,
+    });
+  });
+
+  it('logs assignments correctly', () => {
+    // Reset the mock logger before this test
+    mockLogger = td.object<IAssignmentLogger>();
+    globalClient.setAssignmentLogger(mockLogger);
+    globalClient.getStringAssignment('string-flag', 'default');
+
+    expect(td.explain(mockLogger.logAssignment).callCount).toEqual(1);
+    expect(
+      td.explain(mockLogger.logAssignment).calls[0]?.args[0]
+    ).toMatchObject({
+      subject: 'test-subject',
+      featureFlag: 'string-flag',
+      allocation: 'allocation-123',
+      variation: 'variation-123',
+      subjectAttributes: { attr1: 'value1' },
+      format: 'PRECOMPUTED',
+    });
+
+    // Test that multiple assignments are logged
+    globalClient.getBooleanAssignment('boolean-flag', false);
+
+    expect(td.explain(mockLogger.logAssignment).callCount).toEqual(2);
+    expect(
+      td.explain(mockLogger.logAssignment).calls[1]?.args[0]
+    ).toMatchObject({
+      subject: 'test-subject',
+      featureFlag: 'boolean-flag',
+      allocation: 'allocation-124',
+      variation: 'variation-124',
+      subjectAttributes: { attr1: 'value1' },
+      format: 'PRECOMPUTED',
+    });
+  });
 });
