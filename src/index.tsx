@@ -198,3 +198,13 @@ export async function precomputedInit(
   EppoPrecomputedReactNativeClient.initialized = true;
   return EppoPrecomputedReactNativeClient.instance;
 }
+
+/**
+ * Used to access a singleton SDK precomputed client instance.
+ * Use the method after calling precomputedInit() to initialize the client.
+ * @returns a singleton precomputed client instance
+ * @public
+ */
+export function getPrecomputedInstance(): EppoPrecomputedClient {
+  return EppoPrecomputedReactNativeClient.instance;
+}
