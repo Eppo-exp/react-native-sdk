@@ -74,7 +74,7 @@ interface IBaseRequestConfig {
 /**
  * Configuration for precomputed flag assignments
  */
-interface IPrecompute {
+interface IPrecomputedAssignmentParameters {
   /**
    * Subject key to use for precomputed flag assignments.
    */
@@ -99,7 +99,7 @@ interface IPrecompute {
  * @public
  */
 export interface IPrecomputedClientConfig extends IBaseRequestConfig {
-  precompute: IPrecompute;
+  precompute: IPrecomputedAssignmentParameters;
 }
 
 /**
