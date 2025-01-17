@@ -1,11 +1,10 @@
 import type {
-  AttributeType,
-  BanditActions,
+  BanditSubjectAttributes,
+  ContextAttributes,
   IAssignmentLogger,
   IBanditLogger,
 } from '@eppo/js-client-sdk-common';
-
-export type ServingStoreUpdateStrategy = 'always' | 'expired' | 'empty';
+import type { FlagKey } from '@eppo/js-client-sdk-common/dist/types';
 
 /**
  * Base configuration for API requests and polling behavior
@@ -84,12 +83,15 @@ interface IPrecompute {
   /**
    * Subject attributes to use for precomputed flag assignments.
    */
-  subjectAttributes?: Record<string, AttributeType>;
+  subjectAttributes?: BanditSubjectAttributes;
 
   /**
    * Bandit actions to use for precomputed flag assignments.
    */
-  banditActions?: BanditActions;
+  banditActions?: Record<
+    FlagKey,
+    Record<string /*banditAction name*/, ContextAttributes>
+  >;
 }
 
 /**

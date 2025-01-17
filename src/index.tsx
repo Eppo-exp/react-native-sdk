@@ -147,7 +147,7 @@ export async function precomputedInit(
 
   const {
     apiKey,
-    precompute: { subjectKey, subjectAttributes = {} },
+    precompute: { subjectKey, subjectAttributes = {}, banditActions },
     baseUrl,
     requestTimeoutMs,
     numInitialRequestRetries,
@@ -182,6 +182,7 @@ export async function precomputedInit(
       requestParameters,
       subject,
       precomputedBanditStore: memoryOnlyPrecomputedBanditsStore,
+      banditActions,
     });
 
   EppoPrecomputedReactNativeClient.instance.setAssignmentLogger(
