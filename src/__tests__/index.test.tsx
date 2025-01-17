@@ -12,6 +12,7 @@ import {
   EppoPrecomputedReactNativeClient,
   EppoReactNativeClient,
   getInstance,
+  getPrecomputedInstance,
   init,
   precomputedInit,
 } from '..';
@@ -395,5 +396,18 @@ describe('EppoPrecomputedReactNativeClient E2E test', () => {
       subjectAttributes: { attr1: 'value1' },
       format: 'PRECOMPUTED',
     });
+  });
+});
+
+describe('getPrecomputedInstance', () => {
+  it('returns an instance that safely returns defaults without logging', () => {
+    const mockLogger = td.object<IAssignmentLogger>();
+    const instance = getPrecomputedInstance();
+    instance.setAssignmentLogger(mockLogger);
+
+    const result = instance.getStringAssignment('any-flag', 'default-value');
+
+    expect(result).toBe('default-value');
+    td.verify(mockLogger.logAssignment(td.matchers.anything()), { times: 0 });
   });
 });
