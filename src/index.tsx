@@ -12,6 +12,13 @@ import {
   MemoryOnlyConfigurationStore,
   PrecomputedFlagsRequestParameters,
   Subject,
+  AttributeType,
+  IBanditLogger,
+  IBanditEvent,
+  ContextAttributes,
+  BanditActions,
+  Attributes,
+  BanditSubjectAttributes,
 } from '@eppo/js-client-sdk-common';
 
 import { EppoAsyncStorage } from './async-storage';
@@ -28,6 +35,15 @@ export {
   EppoClient,
   IClientConfig,
   IPrecomputedClientConfig,
+
+  // Bandits
+  IBanditLogger,
+  IBanditEvent,
+  ContextAttributes,
+  BanditSubjectAttributes,
+  BanditActions,
+  Attributes,
+  AttributeType,
 };
 
 const asyncStorage = new EppoAsyncStorage();
