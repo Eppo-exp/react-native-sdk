@@ -7,6 +7,8 @@ import {
   IAssignmentDetails,
   EppoPrecomputedClient,
   IConfigurationStore,
+  IObfuscatedPrecomputedBandit,
+  PrecomputedFlag,
   MemoryOnlyConfigurationStore,
   PrecomputedFlagsRequestParameters,
   Subject,
@@ -18,10 +20,6 @@ import type {
   IClientConfig,
   IPrecomputedClientConfig,
 } from './i-client-config';
-import type {
-  IObfuscatedPrecomputedBandit,
-  PrecomputedFlag,
-} from '@eppo/js-client-sdk-common/dist/interfaces';
 
 export {
   IAssignmentDetails,

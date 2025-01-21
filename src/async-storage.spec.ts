@@ -1,7 +1,10 @@
-import type { Flag, VariationType } from '@eppo/js-client-sdk-common';
+import type {
+  Flag,
+  Variation,
+  VariationType,
+} from '@eppo/js-client-sdk-common';
 import { EppoAsyncStorage, STORAGE_KEY } from './async-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { Variation } from '@eppo/js-client-sdk-common/dist/interfaces';
 
 describe('EppoAsyncStorage', () => {
   let storage: EppoAsyncStorage;
