@@ -2,13 +2,11 @@ import type {
   IAsyncStore,
   IConfigurationStore,
   ISyncStore,
+  Environment,
+  Flag,
+  ObfuscatedFlag,
 } from '@eppo/js-client-sdk-common';
-import {
-  type Environment,
-  type Flag,
-  FormatEnum,
-  type ObfuscatedFlag,
-} from '@eppo/js-client-sdk-common/dist/interfaces';
+import { FormatEnum } from '@eppo/js-client-sdk-common';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Bump this version number when we make breaking changes to the cache.

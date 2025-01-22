@@ -1,10 +1,10 @@
 import type {
   BanditSubjectAttributes,
   ContextAttributes,
+  FlagKey,
   IAssignmentLogger,
   IBanditLogger,
 } from '@eppo/js-client-sdk-common';
-import type { FlagKey } from '@eppo/js-client-sdk-common/dist/types';
 
 /**
  * Base configuration for API requests and polling behavior
