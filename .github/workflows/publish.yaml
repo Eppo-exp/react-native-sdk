@@ -2,6 +2,8 @@ name: Publish to NPM
 on:
   release:
     types: [published]
+  push:
+    branches: [tp/fix/build]
 
 jobs:
   publish:
