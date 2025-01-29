@@ -207,6 +207,7 @@ export async function precomputedInit(
       config.banditLogger
     );
   }
+
   await EppoPrecomputedReactNativeClient.instance.fetchPrecomputedFlags();
 
   EppoPrecomputedReactNativeClient.initialized = true;
