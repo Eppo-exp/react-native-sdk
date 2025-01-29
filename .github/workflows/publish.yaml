@@ -40,9 +40,10 @@ jobs:
           node-version: '18.x'
       - run: yarn install
       - run: yarn test
+      - run: yarn prepack
 
       - name: Publish Latest
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v3
         if: ${{ !github.event.release.prerelease && !steps.version.outputs.prerelease }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
