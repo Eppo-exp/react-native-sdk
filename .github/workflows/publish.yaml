@@ -14,6 +14,8 @@ jobs:
       - name: Parse version from tag
         id: version
         uses: release-kit/semver@v2
+        with:
+          string: 'v3.4.1'
 
       - name: Display Release Plan
         if: ${{ !github.event.release.prerelease && !steps.version.outputs.prerelease }}
