@@ -38,10 +38,11 @@ jobs:
       - run: yarn test
 
       - name: Publish Latest
-        uses: JS-DevTools/npm-publish@v3
+        uses: JS-DevTools/npm-publish@v1
         if: ${{ !github.event.release.prerelease && !steps.version.outputs.prerelease }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
+          dry-run: true
           access: public
 
       - name: Publish Pre-release
