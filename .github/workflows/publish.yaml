@@ -2,8 +2,6 @@ name: Publish to NPM
 on:
   release:
     types: [published]
-  push:
-    branches: [tp/fix/build]
 
 jobs:
   publish:
@@ -14,8 +12,6 @@ jobs:
       - name: Parse version from tag
         id: version
         uses: release-kit/semver@v2
-        with:
-          string: 'v3.5.2'
 
       - name: Display Release Plan
         if: ${{ !github.event.release.prerelease && !steps.version.outputs.prerelease }}
@@ -47,7 +43,6 @@ jobs:
         if: ${{ !github.event.release.prerelease && !steps.version.outputs.prerelease }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          dry-run: true
           access: public
 
       - name: Publish Pre-release
