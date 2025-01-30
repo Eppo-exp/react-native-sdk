@@ -107,9 +107,6 @@ export async function init(config: IClientConfig): Promise<EppoClient> {
 
     EppoReactNativeClient.instance.setAssignmentLogger(config.assignmentLogger);
 
-    // by default use non-expiring assignment cache.
-    EppoReactNativeClient.instance.useNonExpiringInMemoryAssignmentCache();
-
     const storageKeySuffix = buildStorageKeySuffix(config.apiKey);
     const assignmentCache = assignmentCacheFactory({
       storageKeySuffix,
