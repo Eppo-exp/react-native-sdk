@@ -27,6 +27,8 @@ import type {
   IClientConfig,
   IPrecomputedClientConfig,
 } from './i-client-config';
+import { assignmentCacheFactory } from './cache/assignment-cache-factory';
+import HybridAssignmentCache from './cache/hybrid-assignment-cache';
 
 export {
   IAssignmentDetails,
@@ -52,6 +54,16 @@ const memoryOnlyPrecomputedFlagsStore: IConfigurationStore<PrecomputedFlag> =
   new MemoryOnlyConfigurationStore();
 const memoryOnlyPrecomputedBanditsStore: IConfigurationStore<IObfuscatedPrecomputedBandit> =
   new MemoryOnlyConfigurationStore();
+
+/**
+ * Builds a storage key suffix from an API key.
+ * @param apiKey - The API key to build the suffix from
+ * @returns A string suffix for storage keys
+ */
+function buildStorageKeySuffix(apiKey: string): string {
+  // Note that we use the first 8 characters of the API key to create per-API key persistent storages and caches
+  return apiKey.replace(/\W/g, '').substring(0, 8);
+}
 
 export class EppoReactNativeClient extends EppoClient {
   public static initialized = false;
@@ -93,10 +105,20 @@ export async function init(config: IClientConfig): Promise<EppoClient> {
       pollingIntervalMs: config.pollingIntervalMs ?? undefined,
     };
 
-    EppoReactNativeClient.instance.setLogger(config.assignmentLogger);
+    EppoReactNativeClient.instance.setAssignmentLogger(config.assignmentLogger);
 
     // by default use non-expiring assignment cache.
     EppoReactNativeClient.instance.useNonExpiringInMemoryAssignmentCache();
+
+    const storageKeySuffix = buildStorageKeySuffix(config.apiKey);
+    const assignmentCache = assignmentCacheFactory({
+      storageKeySuffix,
+    });
+    if (assignmentCache instanceof HybridAssignmentCache) {
+      await assignmentCache.init();
+    }
+    EppoReactNativeClient.instance.useCustomAssignmentCache(assignmentCache);
+
     EppoReactNativeClient.instance.setConfigurationRequestParameters(
       requestConfiguration
     );
@@ -171,6 +193,15 @@ export async function precomputedInit(
     pollAfterFailedInitialization = false,
     skipInitialRequest = false,
   } = config;
+
+  const storageKeySuffix = buildStorageKeySuffix(config.apiKey);
+  const assignmentCache = assignmentCacheFactory({
+    storageKeySuffix,
+  });
+  if (assignmentCache instanceof HybridAssignmentCache) {
+    await assignmentCache.init();
+  }
+  EppoReactNativeClient.instance.useCustomAssignmentCache(assignmentCache);
 
   // Set up parameters for requesting updated configurations
   const requestParameters: PrecomputedFlagsRequestParameters = {

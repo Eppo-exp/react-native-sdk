@@ -16,5 +16,9 @@ export function assignmentCacheFactory({
     return simpleCache;
   }
   const asyncStorageCache = new AsyncStorageAssignmentCache(storageKeySuffix);
-  return new HybridAssignmentCache(simpleCache, asyncStorageCache);
+  const hybridAssignmentCache = new HybridAssignmentCache(
+    simpleCache,
+    asyncStorageCache
+  );
+  return hybridAssignmentCache;
 }
