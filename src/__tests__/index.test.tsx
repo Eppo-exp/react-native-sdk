@@ -7,7 +7,6 @@ import {
   IAssignmentLogger,
   type IAssignmentEvent,
   IPrecomputedConfigurationResponse,
-  AssignmentCache,
 } from '@eppo/js-client-sdk-common';
 import {
   EppoPrecomputedReactNativeClient,
@@ -402,13 +401,7 @@ describe('EppoPrecomputedReactNativeClient E2E test', () => {
   it('deduplicates assignment logging', () => {
     // Reset the mock logger and assignment cache before this test
     const assignmentCacheMockLogger = td.object<IAssignmentLogger>();
-    const mockAssignmentCache = td.object<AssignmentCache>();
-    td.when(mockAssignmentCache.has(td.matchers.anything())).thenReturn(
-      false,
-      true
-    );
-    td.when(mockAssignmentCache.set(td.matchers.anything())).thenReturn();
-    globalClient.useCustomAssignmentCache(mockAssignmentCache);
+    globalClient.useNonExpiringInMemoryAssignmentCache();
     globalClient.setAssignmentLogger(assignmentCacheMockLogger);
 
     expect(
@@ -422,11 +415,21 @@ describe('EppoPrecomputedReactNativeClient E2E test', () => {
     expect(
       td.explain(assignmentCacheMockLogger.logAssignment).callCount
     ).toEqual(1);
+    globalClient.getBooleanAssignment('boolean-flag', false);
+    expect(
+      td.explain(assignmentCacheMockLogger.logAssignment).callCount
+    ).toEqual(2);
 
     expect(
       td.explain(assignmentCacheMockLogger.logAssignment).calls[0]?.args[0]
     ).toMatchObject({
       featureFlag: 'string-flag',
+      subject: 'test-subject',
+    });
+    expect(
+      td.explain(assignmentCacheMockLogger.logAssignment).calls[1]?.args[0]
+    ).toMatchObject({
+      featureFlag: 'boolean-flag',
       subject: 'test-subject',
     });
   });
