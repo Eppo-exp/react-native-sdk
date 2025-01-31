@@ -60,4 +60,31 @@ describe('HybridStorageAssignmentCache', () => {
     expect(simpleCache.has(key2)).toBeTruthy();
     expect(simpleCache.has({ ...key1, allocationKey: 'foo' })).toBeFalsy();
   });
+
+  it('should handle variation changes for same subject, flag, and allocation', async () => {
+    const baseKey = {
+      subjectKey: 'subject-1',
+      flagKey: 'flag-1',
+      allocationKey: 'allocation-1',
+    };
+
+    const originalAssignment = {
+      ...baseKey,
+      variationKey: 'control',
+    };
+
+    const newAssignment = {
+      ...baseKey,
+      variationKey: 'treatment',
+    };
+
+    await hybridCache.init();
+    hybridCache.set(originalAssignment);
+    expect(hybridCache.has(originalAssignment)).toBeTruthy();
+
+    hybridCache.set(newAssignment);
+
+    expect(hybridCache.has(originalAssignment)).toBeFalsy();
+    expect(hybridCache.has(newAssignment)).toBeTruthy();
+  });
 });
