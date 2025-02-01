@@ -63,8 +63,8 @@ const memoryOnlyPrecomputedBanditsStore: IConfigurationStore<IObfuscatedPrecompu
  * @returns A string suffix for storage keys
  */
 function buildStorageKeySuffix(apiKey: string): string {
+  // Note that we use the first 8 characters of the hashed API key to create per-API key persistent storages and caches
   const hashedApiKey = new SparkMD5().append(apiKey).end();
-  // Note that we use the first 8 characters of the API key to create per-API key persistent storages and caches
   return hashedApiKey.substring(0, 8);
 }
 
