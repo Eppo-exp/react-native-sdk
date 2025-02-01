@@ -397,6 +397,42 @@ describe('EppoPrecomputedReactNativeClient E2E test', () => {
       format: 'PRECOMPUTED',
     });
   });
+
+  it('deduplicates assignment logging', () => {
+    // Reset the mock logger and assignment cache before this test
+    const assignmentCacheMockLogger = td.object<IAssignmentLogger>();
+    globalClient.useNonExpiringInMemoryAssignmentCache();
+    globalClient.setAssignmentLogger(assignmentCacheMockLogger);
+
+    expect(
+      td.explain(assignmentCacheMockLogger.logAssignment).callCount
+    ).toEqual(0);
+    globalClient.getStringAssignment('string-flag', 'default');
+    expect(
+      td.explain(assignmentCacheMockLogger.logAssignment).callCount
+    ).toEqual(1);
+    globalClient.getStringAssignment('string-flag', 'default');
+    expect(
+      td.explain(assignmentCacheMockLogger.logAssignment).callCount
+    ).toEqual(1);
+    globalClient.getBooleanAssignment('boolean-flag', false);
+    expect(
+      td.explain(assignmentCacheMockLogger.logAssignment).callCount
+    ).toEqual(2);
+
+    expect(
+      td.explain(assignmentCacheMockLogger.logAssignment).calls[0]?.args[0]
+    ).toMatchObject({
+      featureFlag: 'string-flag',
+      subject: 'test-subject',
+    });
+    expect(
+      td.explain(assignmentCacheMockLogger.logAssignment).calls[1]?.args[0]
+    ).toMatchObject({
+      featureFlag: 'boolean-flag',
+      subject: 'test-subject',
+    });
+  });
 });
 
 describe('getPrecomputedInstance', () => {
