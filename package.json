@@ -53,7 +53,7 @@
   "dependencies": {
     "@eppo/js-client-sdk-common": "4.8.4",
     "@react-native-async-storage/async-storage": "^1.18.0",
-    "md5": "^2.3.0"
+    "spark-md5": "^3.0.2"
   },
   "devDependencies": {
     "@evilmartians/lefthook": "^1.2.2",
@@ -62,6 +62,7 @@
     "@types/jest": "^28.1.2",
     "@types/react": "~17.0.21",
     "@types/react-native": "0.70.0",
+    "@types/spark-md5": "^3.0.5",
     "del-cli": "^5.0.0",
     "eslint": "^8.4.1",
     "eslint-config-prettier": "^8.5.0",

@@ -30,6 +30,8 @@ import type {
 import { assignmentCacheFactory } from './cache/assignment-cache-factory';
 import HybridAssignmentCache from './cache/hybrid-assignment-cache';
 
+import SparkMD5 from 'spark-md5';
+
 export {
   IAssignmentDetails,
   IAssignmentLogger,
@@ -61,8 +63,9 @@ const memoryOnlyPrecomputedBanditsStore: IConfigurationStore<IObfuscatedPrecompu
  * @returns A string suffix for storage keys
  */
 function buildStorageKeySuffix(apiKey: string): string {
+  const hashedApiKey = new SparkMD5().append(apiKey).end();
   // Note that we use the first 8 characters of the API key to create per-API key persistent storages and caches
-  return apiKey.replace(/\W/g, '').substring(0, 8);
+  return hashedApiKey.substring(0, 8);
 }
 
 export class EppoReactNativeClient extends EppoClient {
