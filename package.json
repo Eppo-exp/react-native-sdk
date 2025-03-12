@@ -51,7 +51,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@eppo/js-client-sdk-common": "4.13.2",
+    "@eppo/js-client-sdk-common": "4.13.4",
     "@react-native-async-storage/async-storage": "^1.18.0",
     "spark-md5": "^3.0.2"
   },
