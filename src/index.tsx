@@ -73,7 +73,6 @@ export class EppoReactNativeClient extends EppoClient {
 
   public static instance: EppoReactNativeClient = new EppoReactNativeClient({
     flagConfigurationStore: asyncStorage,
-    isObfuscated: true,
   });
 }
 
