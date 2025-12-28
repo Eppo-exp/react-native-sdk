@@ -1,16 +1,22 @@
 const path = require('path');
 const escape = require('escape-string-regexp');
 const { getDefaultConfig } = require('@expo/metro-config');
-const exclusionList = require('metro-config/src/defaults/exclusionList');
 const pak = require('../package.json');
 
 const root = path.resolve(__dirname, '..');
 
-const modules = Object.keys({
-  ...pak.peerDependencies,
-});
+const modules = [
+  ...Object.keys(pak.peerDependencies),
+  // Block @babel/runtime from root to use example's version (needed for RN 0.81+)
+  '@babel/runtime',
+];
 
 const defaultConfig = getDefaultConfig(__dirname);
+
+// Create blockList patterns for peer dependencies in root node_modules
+const blockListPatterns = modules.map(
+  (m) => new RegExp(`^${escape(path.join(root, 'node_modules', m))}\\/.*$`)
+);
 
 module.exports = {
   ...defaultConfig,
@@ -23,12 +29,7 @@ module.exports = {
   resolver: {
     ...defaultConfig.resolver,
 
-    blacklistRE: exclusionList(
-      modules.map(
-        (m) =>
-          new RegExp(`^${escape(path.join(root, 'node_modules', m))}\\/.*$`)
-      )
-    ),
+    blockList: blockListPatterns,
 
     extraNodeModules: modules.reduce((acc, name) => {
       acc[name] = path.join(__dirname, 'node_modules', name);
