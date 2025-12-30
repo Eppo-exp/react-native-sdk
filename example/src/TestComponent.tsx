@@ -7,7 +7,7 @@ export default function TestComponent(): JSX.Element {
   const assignedVariation = React.useMemo(() => {
     const eppoClient = getInstance();
     return eppoClient.getStringAssignment(
-      'test-feature-flag',
+      '<FLAG_KEY>',
       '<USER_ID>',
       {},
       'default-value'
