@@ -7,21 +7,27 @@ import { init } from '@eppo/react-native-sdk';
 
 interface IEppoRandomizationProvider {
   waitForInitialization?: boolean;
-  children: JSX.Element;
-  loadingComponent?: JSX.Element;
+  children: React.ReactNode;
+  loadingComponent?: React.ReactNode;
 }
 
 export default function EppoRandomizationProvider({
   waitForInitialization = true,
   children,
   loadingComponent = <Text>Loading...</Text>,
-}: IEppoRandomizationProvider): JSX.Element {
+}: IEppoRandomizationProvider) {
   const [isInitialized, setIsInitialized] = useState(false);
   useEffect(() => {
+    const apiKey = process.env.EXPO_PUBLIC_EPPO_API_KEY;
+    if (!apiKey) {
+      console.error('EXPO_PUBLIC_EPPO_API_KEY is not set');
+      return;
+    }
+
     init({
-      apiKey: '<API_KEY>',
+      apiKey,
       assignmentLogger: {
-        logAssignment(assignment) {
+        logAssignment(assignment: any) {
           console.log('ASSIGNMENT', assignment);
         },
       },
