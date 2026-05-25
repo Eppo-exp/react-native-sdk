@@ -1,15 +1,17 @@
 import {
-  IAssignmentLogger,
-  IAssignmentEvent,
   validation,
   EppoClient,
+  EppoPrecomputedClient,
+  MemoryOnlyConfigurationStore,
+} from '@eppo/js-client-sdk-common';
+import type {
+  IAssignmentLogger,
+  IAssignmentEvent,
   FlagConfigurationRequestParameters,
   IAssignmentDetails,
-  EppoPrecomputedClient,
   IConfigurationStore,
   IObfuscatedPrecomputedBandit,
   PrecomputedFlag,
-  MemoryOnlyConfigurationStore,
   PrecomputedFlagsRequestParameters,
   Subject,
   AttributeType,
@@ -32,11 +34,11 @@ import HybridAssignmentCache from './cache/hybrid-assignment-cache';
 
 import SparkMD5 from 'spark-md5';
 
-export {
+export { EppoClient };
+export type {
   IAssignmentDetails,
   IAssignmentLogger,
   IAssignmentEvent,
-  EppoClient,
   IClientConfig,
   IPrecomputedClientConfig,
 

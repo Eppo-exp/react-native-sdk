@@ -1,11 +1,11 @@
 import * as td from 'testdouble';
 
 import type { EppoAsyncStorage } from 'src/async-storage';
-import {
-  VariationType,
+import { VariationType } from '@eppo/js-client-sdk-common';
+import type {
   Flag,
   IAssignmentLogger,
-  type IAssignmentEvent,
+  IAssignmentEvent,
   IPrecomputedConfigurationResponse,
 } from '@eppo/js-client-sdk-common';
 import {
