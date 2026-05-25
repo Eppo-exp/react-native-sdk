@@ -40,7 +40,7 @@ class AsyncStorageStore<T> implements ISyncStore<T> {
   }
 
   public setEntries(entries: Record<string, T>): void {
-    for (var key in entries) {
+    for (const key in entries) {
       this.cache[key] = entries[key];
     }
 
