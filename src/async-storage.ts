@@ -44,7 +44,9 @@ class AsyncStorageStore<T> implements ISyncStore<T> {
       this.cache[key] = entries[key];
     }
 
-    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(this.cache));
+    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(this.cache)).catch(
+      console.error
+    );
     this._isInitialized = true;
   }
 }
