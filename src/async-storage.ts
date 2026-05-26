@@ -40,7 +40,7 @@ class AsyncStorageStore<T> implements ISyncStore<T> {
   }
 
   public setEntries(entries: Record<string, T>): void {
-    for (var key in entries) {
+    for (const key in entries) {
       this.cache[key] = entries[key];
     }
 
@@ -49,9 +49,9 @@ class AsyncStorageStore<T> implements ISyncStore<T> {
   }
 }
 
-export class EppoAsyncStorage
-  implements IConfigurationStore<Flag | ObfuscatedFlag>
-{
+export class EppoAsyncStorage implements IConfigurationStore<
+  Flag | ObfuscatedFlag
+> {
   servingStore: ISyncStore<Flag | ObfuscatedFlag>;
   persistentStore: IAsyncStore<Flag | ObfuscatedFlag> | null;
   private initialized: boolean;

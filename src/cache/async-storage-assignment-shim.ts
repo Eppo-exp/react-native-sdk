@@ -45,19 +45,19 @@ export class AsyncStorageAssignmentShim implements Map<string, string> {
     return this.cache.size;
   }
 
-  entries(): IterableIterator<[string, string]> {
+  entries() {
     return this.cache.entries();
   }
 
-  keys(): IterableIterator<string> {
+  keys() {
     return this.cache.keys();
   }
 
-  values(): IterableIterator<string> {
+  values() {
     return this.cache.values();
   }
 
-  [Symbol.iterator](): IterableIterator<[string, string]> {
+  [Symbol.iterator]() {
     return this.cache[Symbol.iterator]();
   }
 

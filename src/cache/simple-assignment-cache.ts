@@ -1,8 +1,8 @@
 import {
   AbstractAssignmentCache,
   NonExpiringInMemoryAssignmentCache,
-  AssignmentCacheEntry,
 } from '@eppo/js-client-sdk-common';
+import type { AssignmentCacheEntry } from '@eppo/js-client-sdk-common';
 
 import type {
   BulkReadAssignmentCache,
