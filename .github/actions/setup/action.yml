@@ -9,15 +9,20 @@ runs:
       with:
         node-version: '20.x'  # Specify the Node.js version directly here
 
+    - name: Resolve installed Node version
+      id: node-info
+      run: echo "version=$(node -v)" >> "$GITHUB_OUTPUT"
+      shell: bash
+
     - name: Cache dependencies
       id: yarn-cache
       uses: actions/cache@v3
       with:
         path: |
           **/node_modules
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        key: ${{ runner.os }}-node-${{ steps.node-info.outputs.version }}-yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
-          ${{ runner.os }}-yarn-
+          ${{ runner.os }}-node-${{ steps.node-info.outputs.version }}-yarn-
 
     - name: Install dependencies
       if: steps.yarn-cache.outputs.cache-hit != 'true'
