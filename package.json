@@ -1,6 +1,6 @@
 {
   "name": "@eppo/react-native-sdk",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Eppo React Native SDK",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
