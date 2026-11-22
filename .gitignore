@@ -73,3 +73,6 @@ lib/
 .python-version
 
 src/__tests__/data
+
+# jest coverage (make test)
+coverage/

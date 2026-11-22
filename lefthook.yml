@@ -2,10 +2,8 @@ pre-commit:
   parallel: true
   commands:
     lint:
-      files: git diff --cached --name-only
       glob: "*.{js,ts,jsx,tsx}"
-      run: npx eslint {files}
+      run: npx eslint {staged_files}
     types:
-      files: git diff --cached --name-only
       glob: "*.{ts,tsx}"
       run: npx tsc --noEmit
