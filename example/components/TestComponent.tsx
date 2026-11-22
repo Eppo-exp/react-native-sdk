@@ -3,7 +3,7 @@ import { Text } from 'react-native';
 
 import { getInstance } from '@eppo/react-native-sdk';
 
-export default function TestComponent(): JSX.Element {
+export default function TestComponent(): React.JSX.Element {
   const assignedVariation = React.useMemo(() => {
     const eppoClient = getInstance();
     return eppoClient.getStringAssignment(
@@ -14,7 +14,7 @@ export default function TestComponent(): JSX.Element {
     );
   }, []);
 
-  var text = `In Variation: ${assignedVariation}`;
+  let text = `In Variation: ${assignedVariation}`;
   if (assignedVariation === 'show-logo') {
     text = 'Assigned to logo group';
   }
